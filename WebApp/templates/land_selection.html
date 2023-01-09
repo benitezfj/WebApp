@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID Parcela</th>
+        <th>Nombre</th>
+        <th>Tipo de cultivo</th>
+        <th>Superficie</th>
+        <th>Ciudad</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for land in lands %}
+        <tr>
+          {% for value in land %}
+              <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        columns: [
+          null,
+          {searchable: false},
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
+          null],
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Página 2</title>
+        <!-- Estilo para el menú (header) -->
+		<style type="text/css">
+
+			#header * {
+				margin:0px;
+				padding:0px;
+                box-sizing: border-box;
+			}
+			
+			#header {
+				margin: auto;
+				width:100%;
+				font-family:Arial, Helvetica, sans-serif;
+                top: 0;
+                position: absolute;
+                z-index: -2;
+			}
+			
+			#header ul, ol {
+				list-style:none;
+			}
+			
+			#header .nav > li {
+				float:left;
+			}
+			
+			#header .nav li a {
+				background-color: #c11526;
+				color:#fff;
+				text-decoration:none;
+				padding:10px 12px;
+				display:block;
+			}
+			
+			#header .nav li a:hover {
+				background-color:#434343;
+			}
+			
+			#header .nav li ul {
+				display:none;
+				position:relative;
+				min-width:140px;
+			}
+			
+			#header .nav li:hover > ul {
+				display:block;
+			}
+			
+			#header .nav li ul li {
+				position:relative;
+			}
+			
+			#header .nav li ul li ul {
+				right:-140px;
+				top:0px;
+			}
+			
+		</style>
+        <style>
+            th, td {
+                border-bottom: 1px solid #ddd;
+            }
+            tr:hover {
+                background-color: rgb(255, 202, 202);
+            }
+        </style>
+        <script>
+            $(".myclass tr").click(function(){
+                window.location = "example.html";
+            });
+        </script>
+    </head>
+
+    <body>
+        <div id="container">
+            <!-- Menú superior -->
+            <nav id="header">
+                <ul class="nav">
+                    <li><a href="">Parcelas</a>
+                        <ul>
+                            <li><a href="">Listado y gesión de parcelas</a></li>
+                            <li><a href="">Nueva Parcela</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="">Ajustes de usuario</a></li>
+                </ul>
+            </nav>
+            <div id="seleccion-parcelas" style="margin-top: 50px; width: 90%; margin-left: auto; margin-right: auto;">
+                <h2>Listado de Parcelas</h2>
+                <table class="parcelas" style="width: 100%; text-align: center;">
+                    <tr>
+                        <th>ID Parcela</th>
+                        <th>Nombre</th>
+                        <th>Tipo de cultivo</th>
+                        <th>Superficie</th>
+                        <th>Ciudad</th>
+                    </tr>
+                    <tbody style="cursor: pointer;">
+                        <tr>
+                            <td>ID 1</td>
+                            <td>Nombre 1</td>
+                            <td>Tipo 1</td>
+                            <td>Superficie 1</td>
+                            <td>Ciudad 1</td>
+                        </tr>
+                        <tr>
+                            <td>ID 2</td>
+                            <td>Nombre 2</td>
+                            <td>Tipo 2</td>
+                            <td>Superficie 2</td>
+                            <td>Ciudad 2</td>
+                        </tr>
+                        <tr>
+                            <td>ID 3</td>
+                            <td>Nombre 3</td>
+                            <td>Tipo 3</td>
+                            <td>Superficie 3</td>
+                            <td>Ciudad 3</td>
+                        </tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </body>
+</html>
