@@ -4,7 +4,7 @@
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Register a Position</legend>
+                <legend class="border-bottom mb-4">Register a Role</legend>
                 <div class="form-group">
                     {{ form.description.label(class="form-control-label") }}
 
@@ -24,10 +24,5 @@
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
         </form>
-    </div>
-    <div class="border-top pt-3">
-        <small class="text-muted">
-            Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
-        </small>
     </div>
 {% endblock content %}

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
     <!-- Required meta tags -->
@@ -12,6 +11,9 @@
  
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+        
     {% if title %}
         <title>Fertilizer Meter - {{ title }}</title>
     {% else %}
@@ -32,7 +34,7 @@
                   <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
                   <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
                   <a class="nav-item nav-link" href="{{ url_for('land_selection') }}">Lands</a>
-                  <a class="nav-item nav-link" href="#">Map</a>
+                  <a class="nav-item nav-link" href="{{ url_for('maps') }}">Map</a>
                   <a class="nav-item nav-link" href="#">Fertilization</a>
                   <a class="nav-item nav-link" href="#">Indices</a>
               {% else %}

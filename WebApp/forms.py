@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from WebApp.models import User, Position
 '''
@@ -62,5 +62,9 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
     
-    
-    
+
+
+class MapForm(FlaskForm):
+    latitude = FloatField('Latitude', validators=[DataRequired()])           
+    longitude  = FloatField('Longitude', validators=[DataRequired()])
+    submit = SubmitField('Find Location')

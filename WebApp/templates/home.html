@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
+    {% if current_user.is_authenticated %}
+    <h1>Home Page</h1>
     {% for post in posts %}
         <article class="media content-section">
           <div class="media-body">
@@ -12,4 +14,9 @@
           </div>
         </article>
     {% endfor %}
+    {% else %}
+        <h1>Home Page</h1>
+    {% endif %}
 {% endblock content %}
+
+
