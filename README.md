@@ -20,27 +20,27 @@ sowing and harvest periods, fertilizer measurement, etc.
 ## Images
 
 ### Home Page
-    
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/home.png)<!-- -->
+
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/home.png?raw=true)
 
 ### Role registration
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/role.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/role.png?raw=true)
 
 ### New user registration
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/new_user.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/new_user.png?raw=true)
 
 ### View of lands
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/parcelas.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/parcelas.png?raw=true)
 
 ### Login Page
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/login.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/login.png?raw=true)
 
 ### Coordinate location finder
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/location_2.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/location_2.png?raw=true)
 
-![](https://github.com/benitezfj/WebApp/tree/master/WebApp/static/images/location_1.png)<!-- -->
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/location_1.png?raw=true)
