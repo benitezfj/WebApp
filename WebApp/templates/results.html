@@ -3,9 +3,20 @@
     <div id="map"></div>
 
     <script>
-        var map = L.map('map').setView([{{lat}}, {{lon}}], 16);
+        var map = L.map('map').setView([{{lat}}, {{lon}}], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'}).addTo(map);
-
+        map.pm.addControls({
+                            position: 'topleft',  
+                            drawCircle: false,  
+                            drawRectangle: false,
+                            drawPolyline: false,
+                            drawCircleMarker: false,
+                            drawText: false,
+                            editMode: false,
+                            dragMode: false,
+                            cutPolygon: false,
+                            rotateMode: false,
+                           }); 
     </script>
 {% endblock content %}
 

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from WebApp.models import User, Position
 '''
 wtforms
@@ -16,6 +16,17 @@ wtforms
         
     
 '''
+crop = [(1, 'Soja'), 
+        (2, 'Maíz'), 
+      (3, 'Trigo'),
+      (4, 'Oliva'),
+      (5, 'Arroz'),
+      (6, 'Fruta'),
+      (7, 'Raíces y Tubérculos'),
+      (8, 'Vegetales'),
+      (9, 'Azúcar')]
+
+
 # ('Position', query_factory=position_query, allow_blank=False, get_pk=lambda a: a.id)
 # Formulacion usado para registrar un usuario
 class RegistrationForm(FlaskForm):
@@ -23,7 +34,7 @@ class RegistrationForm(FlaskForm):
                           validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                        validators=[DataRequired(), Email()])
-    position = SelectField('Position', coerce=int)
+    position = SelectField('Position', coerce=int, choices=crop)
     password = PasswordField('Password', 
                              validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
@@ -68,3 +79,49 @@ class MapForm(FlaskForm):
     latitude = FloatField('Latitude', validators=[DataRequired()])           
     longitude  = FloatField('Longitude', validators=[DataRequired()])
     submit = SubmitField('Find Location')
+
+# ----------------------------Ingreso de Datos
+# ----------------------------Cabecera
+class CropForm(FlaskForm):
+    croptype = SelectMultipleField('CropType', coerce=int)
+    sowdate = DateField('SowDate ', validators=[DataRequired()])
+    harvesdate = DateField('HarvesDate', validators=[DataRequired()])
+    productexpected =  StringField("ProductionExpected", [Optional()], default=0)
+    submit = SubmitField('Register the crop')
+    
+    def validate_production_expected(self, productexpected):
+        try:
+            price = float(productexpected.data)
+        except ValueError:
+            raise ValidationError("Produccion Esperada Invalida.")
+        if price < 0:
+            raise ValidationError("La producción esperada debe ser positiva")
+        if price == "":
+            raise ValidationError("La producción esperada no puede estar vacia.")
+
+# ----------------------------Detalles
+class FertilizarForm(FlaskForm):
+    fertilizartype = SelectMultipleField('FertilizerType', coerce=int)
+    posology = StringField("Posology") #Agregar validadores
+    diseasesabnormalities = StringField('DiseaseOrAbnormality', validators=[Length(min=2, max=150)])
+    observation = StringField('Obs', validators=[Length(min=2, max=150)])
+    submit = SubmitField('Register Fertilizer Data')
+    
+class TreatmentForm(FlaskForm): 
+    treatment = StringField('Treatment')
+    treatmenttype = SelectMultipleField('TreatmentType', coerce=int)
+    treatmentdate = DateField('TreatmentDate')
+    posology = StringField("Posology")
+    treatmentobservation = StringField('Obs', validators=[Length(min=2, max=150)])
+    submit = SubmitField('Register Treatment Data')
+    
+class SoilForm(FlaskForm):    
+    soilsampledate = DateField('TreatmentDate')
+    location = FloatField('Location')
+    depth = FloatField('Depth')
+    nitrogenlevel = FloatField('NitrogenLevel')
+    organicmatterlevel = FloatField('OrganicMatterLevel')
+    phosphoruslevel = FloatField('PhosphorusLevel')
+    potassiumlevel = FloatField('PotassiumLevel')
+    soilmoisture = FloatField('SoilMoisture')
+    submit = SubmitField('Register Soil Sample Data')
