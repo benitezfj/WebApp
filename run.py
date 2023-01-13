@@ -30,3 +30,7 @@ if __name__ == '__main__':
 # sqlite3 site.db
 # select * from Position;
 # .exit
+
+# import inspect
+# lines = inspect.getsource(foo)
+# print(lines)

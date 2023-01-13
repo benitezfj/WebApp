@@ -3,6 +3,10 @@ from WebApp import app, db, bcrypt
 from WebApp.forms import RegistrationForm, LoginForm, RegistrationPositionForm, MapForm
 from WebApp.models import User, Position
 from flask_login import login_user, current_user, logout_user, login_required
+from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
+
+import folium
+import geemap.foliumap as geemap
 
 import ee
 
@@ -23,10 +27,32 @@ lands = (
         ("ID 3", "Nombre 3", "Tipo 3", "Superficie 3", "Ciudad 3"),
 )
 
+roi = ee.Geometry.Polygon(-55.04541651090373, -25.45734994544611, 
+                          -55.04445150202754, -25.45709054792545, 
+                          -55.04466969093059, -25.45626820569725, 
+                          -55.04565972074376, -25.45647942106365, 
+                          -55.04541651090373, -25.45734994544611)
+
+rgbFilter = {'min': 1, 'max': 3000, 'gamma': 1.5, 'bands': ['B4', 'B3', 'B2']}
+nrgbFilter = {'min': 1, 'max': 3000, 'gamma': 1.5, 'bands': ['B8', 'B4', 'B3']}
+vis = {'min': -1, 'max': 1,
+       'palette': [
+          '#d73027',
+          '#f46d43',
+          '#fdae61',
+          '#fee08b',
+          '#d9ef8b',
+          '#a6d96a',
+          '#66bd63',
+          '#1a9850'
+       ]
+      }
+
 @app.route("/")
 @app.route("/home")
 def home():
      return render_template('home.html', posts=posts)
+
 
 @app.route("/maps", methods=['GET','POST'])
 def maps():
@@ -34,11 +60,59 @@ def maps():
     if request.method == "POST":
         latitude = form.latitude.data
         longitude = form.longitude.data
-        return render_template('results.html', title='Maps', lat=latitude , lon=longitude)
+        
+        figure = folium.Figure()
+        Map = geemap.Map(center=(latitude, longitude), zoom = 6, plugin_Draw = True, Draw_export = False, plugin_LayerControl = False)
+        Map.add_basemap('HYBRID')
+
+        # ----Earth Engine Extraction-----
+        start_date = '2022-12-01'
+        end_date = '2022-12-27'
+
+        # featureCollection = ee.FeatureCollection(json.loads(geo_json))
+        collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
+            .filterDate(start_date, end_date) \
+            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',10)) \
+            .filterBounds(roi) \
+            .sort('system:time_start', False) 
+            
+        collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
+        collection = collection.map(getCWSI)    
+        
+        # clipped = collection.map(lambda image: image.clip(roi))
+        Map.addLayer(collection.first(),           nrgbFilter, 'Cetapar Maiz - False RGB')
+        Map.addLayer(collection.first(),           rgbFilter,  'Cetapar Maiz - RGB')
+        Map.addLayer(collection.first().select('NDVI'), vis, 'NDVI')
+        Map.addLayer(collection.first().select('GNDVI'),vis, 'GNDVI')
+        Map.addLayer(collection.first().select('NDSI'), vis, 'NDSI')
+        Map.addLayer(collection.first().select('ReCl'), vis, 'ReCl')
+        Map.addLayer(collection.first().select('CWSI'), vis, 'CWSI')
+        Map.addLayer(ee.Image().paint(roi,0,2), {},         'Region of Interest')
+
+        Map.add_colorbar(vis, label="Scale", layer_name="SRTM DEM")
+
+        Map.centerObject(roi,17)
+        # ---------------------------------
+
+        Map.add_to(figure)
+
+        # figure.render()
+        return render_template('results2.html', title='Maps', maps=figure.render())
     else:
         return render_template('input.html', title='Maps', form=form)
-
     
+# -----------------------
+# @app.route("/maps", methods=['GET','POST'])
+# def maps():
+#     form = MapForm()
+#     if request.method == "POST":
+#         latitude = form.latitude.data
+#         longitude = form.longitude.data
+#         return render_template('results.html', title='Maps', lat=latitude , lon=longitude)
+#     else:
+#         return render_template('input.html', title='Maps', form=form)
+# -----------------------
+
     # if request.method == "POST":
     #     lat = request.form["lat"]
     #     lon = request.form["lon"]

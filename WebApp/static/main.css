@@ -81,5 +81,67 @@ a.article-title:hover {
 
 #map{
     display:block;
-    height:800px;
+    height:550px;
+    width:700;
+}
+/* ---------------------- */
+.form-title{
+	margin-left: 20px;
+	margin-top: 2px;
+	margin-bottom: 0px;
+	font-family: 'Do Hyeon', sans-serif;
+}
+form{
+	padding: 20px;
+	display: inline-block;
+}
+label { 
+	font-weight: bold; 
+	display: block; 
+	width: 100px; 
+	float: left;
+}
+label, input {
+    display: block;
+    border-color: #1c005c;
+}
+#load_map{
+	margin-right: auto;
+	margin-left: auto;
+	border-radius: 40px;
+	background-color: #1c005c;
+	border-color: #1c005c;
+}
+div .row{
+	padding: 30px;
+}
+.form-div{
+	background-color: #e2e2e2;
+	float: left;
+	width: 25%;
+	height: 90vh;
+}
+.map-div{
+	float: right;
+	width: 75%;
+	height: 90vh;
+}
+#clear_map{
+	margin-right: auto;
+	margin-left: 20px;
+	border-radius: 40px;
+	border-color: #1c005c
+}
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.9); /* Black background with opacity */
+  z-index: 99; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
 }
