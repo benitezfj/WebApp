@@ -16,16 +16,8 @@ wtforms
         
     
 '''
-crop = [(1, 'Soja'), 
-        (2, 'Maíz'), 
-      (3, 'Trigo'),
-      (4, 'Oliva'),
-      (5, 'Arroz'),
-      (6, 'Fruta'),
-      (7, 'Raíces y Tubérculos'),
-      (8, 'Vegetales'),
-      (9, 'Azúcar')]
-
+# crop = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
+       
 
 # ('Position', query_factory=position_query, allow_blank=False, get_pk=lambda a: a.id)
 # Formulacion usado para registrar un usuario
@@ -34,7 +26,7 @@ class RegistrationForm(FlaskForm):
                           validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                        validators=[DataRequired(), Email()])
-    position = SelectField('Position', coerce=int, choices=crop)
+    position = SelectField('Position', coerce=int)
     password = PasswordField('Password', 
                              validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
@@ -55,7 +47,7 @@ class RegistrationForm(FlaskForm):
 # Formulacion usado para registrar un usuario
 class RegistrationPositionForm(FlaskForm):
     description = StringField('Position', 
-                          validators=[DataRequired(), Length(min=2, max=20)])
+                              validators=[DataRequired(), Length(min=2, max=20)])
     submit = SubmitField('Register')
     
     def validate_position(self, description):
@@ -82,10 +74,10 @@ class MapForm(FlaskForm):
 
 # ----------------------------Ingreso de Datos
 # ----------------------------Cabecera
-class CropForm(FlaskForm):
-    croptype = SelectMultipleField('CropType', coerce=int)
-    sowdate = DateField('SowDate ', validators=[DataRequired()])
-    harvesdate = DateField('HarvesDate', validators=[DataRequired()])
+class InsertCropForm(FlaskForm):
+    croptype = SelectMultipleField('Crop Type', coerce=int)
+    sowdate = DateField('SowDate ', format='%d/%m/%Y', validators=[DataRequired()])
+    harvesdate = DateField('HarvesDate', format='%d/%m/%Y', validators=[DataRequired()])
     productexpected =  StringField("ProductionExpected", [Optional()], default=0)
     submit = SubmitField('Register the crop')
     

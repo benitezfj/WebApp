@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
 # import os
 # os.getcwd()
-# os.chdir('C:\\Users\\Maria\\Documents\\Python Scripts\\Web')
+# os.chdir('C:\\Users\\User\\Documents\\Python Scripts\\Web')
 # 
 # from WebApp import db, app
 # app.app_context().push()
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 # db.session.commit()
 # Position.query.all()
 # position = Position.query.get(1)
-# user_1 = User(username='Francisco', email='test@example.com', position_id=position.id)
+# user_1 = User(username='User_1', email='test@example.com', position_id=position.id)
 
 
 # db.drop_all()

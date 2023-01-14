@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request
 from WebApp import app, db, bcrypt
-from WebApp.forms import RegistrationForm, LoginForm, RegistrationPositionForm, MapForm
+from WebApp.forms import RegistrationForm, LoginForm, RegistrationPositionForm, MapForm, InsertCropForm
 from WebApp.models import User, Position
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
@@ -119,6 +119,25 @@ def maps():
     #     return render_template('results.html', lat=lat , lon=lon)
     # else:
     #     return render_template('input.html')
+
+@app.route("/registercrop", methods=['GET','POST'])
+def insert_crop_data():
+    form = InsertCropForm()
+    # crop = [(p.id, p.description) for p in Position.query.order_by(Position.description).all()]
+    form.croptype.choices = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
+    if form.validate_on_submit():
+        crop = CropField(croptype_id = form.croptype.data
+                         sowdate = form.sowdate.data
+                         harvesdate = form.harvesdate.data
+                         productexpected =  form.productexpected.data)
+        
+        db.session.add(crop)
+        db.session.commit()
+        flash('Se ha registrado un nuevo campo de cultivo', 'success')
+        return redirect(url_for('registercrop'))
+    return render_template('position.html', title='Position', form=form)
+
+
 
 @app.route("/land")
 def land_selection():
