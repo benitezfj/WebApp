@@ -45,6 +45,10 @@ sowing and harvest periods, fertilizer measurement, etc.
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/location_1.png?raw=true)
 
+### Farmland registration
+
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/farmland.png?raw=true)
+
 ### Crop Water Stress Index (Google Earth Engine)
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/CWSI.png?raw=true)

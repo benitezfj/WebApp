@@ -97,6 +97,34 @@ EE_PRODUCTS = {
                 'start_date': '2019-02-08',
                 'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present
             },
+        },
+        '2': {
+            'TOA': {
+                'display': 'Top-of-Atmosphere Reflectance',
+                'collection': 'COPERNICUS/S2_HARMONIZED',
+                'index': '',
+                'vis_params': {
+                    'bands': ['B4', 'B3', 'B2'],
+                    'min': 1, 
+                    'max': 3000, 
+                    'gamma': 1.5
+                },
+                'start_date': '2015-06-23',
+                'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present
+            },
+            'BOA': {
+                'display': 'Bottom-of-Atmosphere Reflectance',
+                'collection': 'COPERNICUS/S2_SR_HARMONIZED',
+                'index': '',
+                'vis_params': {
+                    'bands': ['B4', 'B3', 'B2'],
+                    'min': 1, 
+                    'max': 3000, 
+                    'gamma': 1.5
+                },
+                'start_date': '2017-03-28',
+                'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present
+            },
         }
     },
     'landsat': {

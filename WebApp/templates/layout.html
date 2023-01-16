@@ -1,5 +1,6 @@
 <html>
 <head>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -17,7 +18,7 @@
     
     <!-- geoman leaflet plugin -->
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />  
-    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>  
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>     
         
     {% if title %}
         <title>Fertilizer Meter - {{ title }}</title>
@@ -39,9 +40,9 @@
                   <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
                   <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
                   <a class="nav-item nav-link" href="{{ url_for('land_selection') }}">Lands</a>
-                  <a class="nav-item nav-link" href="{{ url_for('maps') }}">Map</a>
+                  <a class="nav-item nav-link" href="{{ url_for('maps') }}">Indices</a>
+                  <a class="nav-item nav-link" href="{{ url_for('insert_farmland_data') }}">Farmland</a>
                   <a class="nav-item nav-link" href="#">Fertilization</a>
-                  <a class="nav-item nav-link" href="#">Indices</a>
               {% else %}
                   <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
               {% endif %}
@@ -51,7 +52,7 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if current_user.is_authenticated %}
-                        <a class="dropdown-item" href="{{ url_for('registerposition') }}">Position</a>
+                        <a class="dropdown-item" href="{{ url_for('registerrole') }}">Role</a>
                         <a class="dropdown-item" href="{{ url_for('account') }}">Account</a>
                         <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
                     {% else %}

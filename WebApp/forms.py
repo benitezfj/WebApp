@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from WebApp.models import User, Position
+from WebApp.models import User, Role
+import datetime
 '''
 wtforms
     StringField: Crea campo en el que se permite cargar cadena de textos
@@ -26,7 +27,7 @@ class RegistrationForm(FlaskForm):
                           validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                        validators=[DataRequired(), Email()])
-    position = SelectField('Position', coerce=int)
+    role = SelectField('User Role', coerce=int)
     password = PasswordField('Password', 
                              validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', 
@@ -45,15 +46,15 @@ class RegistrationForm(FlaskForm):
     
    
 # Formulacion usado para registrar un usuario
-class RegistrationPositionForm(FlaskForm):
-    description = StringField('Position', 
+class RegistrationRoleForm(FlaskForm):
+    description = StringField('Role', 
                               validators=[DataRequired(), Length(min=2, max=20)])
     submit = SubmitField('Register')
     
-    def validate_position(self, description):
-        position_data = Position.query.filter_by(description=description.data).first()
-        if position_data:
-            raise ValidationError('La posición ya se encuentra creada.')
+    def validate_role(self, description):
+        role_data = Role.query.filter_by(description=description.data).first()
+        if role_data:
+            raise ValidationError('El rol ya se encuentra creado.')
         
        
    
@@ -74,23 +75,32 @@ class MapForm(FlaskForm):
 
 # ----------------------------Ingreso de Datos
 # ----------------------------Cabecera
-class InsertCropForm(FlaskForm):
+class InsertFarmlandForm(FlaskForm):
     croptype = SelectMultipleField('Crop Type', coerce=int)
     sowdate = DateField('SowDate ', format='%d/%m/%Y', validators=[DataRequired()])
-    harvesdate = DateField('HarvesDate', format='%d/%m/%Y', validators=[DataRequired()])
-    productexpected =  StringField("ProductionExpected", [Optional()], default=0)
+    harvestdate = DateField('HarvestDate', format='%d/%m/%Y', validators=[DataRequired()])
+    productexpected =  FloatField("ProductionExpected", validators=[Optional()], default=0)
     submit = SubmitField('Register the crop')
     
     def validate_production_expected(self, productexpected):
         try:
-            price = float(productexpected.data)
+            prod_exp = float(productexpected.data)
         except ValueError:
             raise ValidationError("Produccion Esperada Invalida.")
-        if price < 0:
+        if prod_exp < 0:
             raise ValidationError("La producción esperada debe ser positiva")
-        if price == "":
+        if prod_exp == "":
             raise ValidationError("La producción esperada no puede estar vacia.")
-
+            
+    def validate_dates(self, sowdate, harvestdate):
+        try:
+            sow_date = datetime.date(sowdate.data)
+            harvest_date = datetime.date(harvestdate.data)
+        except ValueError:
+            raise ValidationError("La fecha de siembra o cosecha invalida.")
+        if sow_date >= harvest_date:
+            raise ValidationError("La fecha de cosecha debe ser posterior a la fecha de siembra.")
+            
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):
     fertilizartype = SelectMultipleField('FertilizerType', coerce=int)

@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from WebApp import app, db, bcrypt
-from WebApp.forms import RegistrationForm, LoginForm, RegistrationPositionForm, MapForm, InsertCropForm
-from WebApp.models import User, Position
+from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm
+from WebApp.models import User, Role, Farmland
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
 
@@ -91,7 +91,7 @@ def maps():
 
         Map.add_colorbar(vis, label="Scale", layer_name="SRTM DEM")
 
-        Map.centerObject(roi,17)
+        # Map.centerObject(roi,17)
         # ---------------------------------
 
         Map.add_to(figure)
@@ -120,22 +120,22 @@ def maps():
     # else:
     #     return render_template('input.html')
 
-@app.route("/registercrop", methods=['GET','POST'])
-def insert_crop_data():
-    form = InsertCropForm()
+@app.route("/farmland", methods=['GET','POST'])
+def insert_farmland_data():
+    form = InsertFarmlandForm()
     # crop = [(p.id, p.description) for p in Position.query.order_by(Position.description).all()]
     form.croptype.choices = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
     if form.validate_on_submit():
-        crop = CropField(croptype_id = form.croptype.data
-                         sowdate = form.sowdate.data
-                         harvesdate = form.harvesdate.data
-                         productexpected =  form.productexpected.data)
-        
+        crop = Farmland(croptype_id = form.croptype.data,
+                        sow_date = form.sowdate.data,
+                        harvest_date = form.harvestdate.data,
+                        product_expected =  form.productexpected.data)
+
         db.session.add(crop)
         db.session.commit()
         flash('Se ha registrado un nuevo campo de cultivo', 'success')
         return redirect(url_for('registercrop'))
-    return render_template('position.html', title='Position', form=form)
+    return render_template('crop.html', title='Insert a New Crop', form=form)
 
 
 
@@ -154,13 +154,13 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RegistrationForm()
-    pos = [(p.id, p.description) for p in Position.query.order_by(Position.description).all()]
-    form.position.choices = pos
+    pos = [(p.id, p.description) for p in Role.query.order_by(Role.description).all()]
+    form.role.choices = pos
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(username = form.username.data, 
                     email = form.email.data, 
-                    position_id = form.position.data, 
+                    role_id = form.role.data, 
                     password = hashed_password)
         db.session.add(user)
         db.session.commit()
@@ -168,16 +168,16 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-@app.route("/registerposition", methods=['GET','POST'])
-def registerposition():
-    form = RegistrationPositionForm()
+@app.route("/role", methods=['GET','POST'])
+def registerrole():
+    form = RegistrationRoleForm()
     if form.validate_on_submit():
-        pos = Position(description = form.description.data)
+        pos = Role(description = form.description.data)
         db.session.add(pos)
         db.session.commit()
         flash('Se ha registrado una nueva posición', 'success')
         return redirect(url_for('login'))
-    return render_template('position.html', title='Position', form=form)
+    return render_template('position.html', title='Role', form=form)
 
 
 @app.route("/login", methods=['GET','POST'])
