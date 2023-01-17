@@ -76,11 +76,11 @@ class MapForm(FlaskForm):
 # ----------------------------Ingreso de Datos
 # ----------------------------Cabecera
 class InsertFarmlandForm(FlaskForm):
-    croptype = SelectMultipleField('Crop Type', coerce=int)
-    sowdate = DateField('SowDate ', format='%d/%m/%Y', validators=[DataRequired()])
-    harvestdate = DateField('HarvestDate', format='%d/%m/%Y', validators=[DataRequired()])
-    productexpected =  FloatField("ProductionExpected", validators=[Optional()], default=0)
-    submit = SubmitField('Register the crop')
+    croptype = SelectField('Tipo de Cultivo', coerce=int)
+    sowdate = DateField('Fecha de Siembra', format='%Y-%m-%d', validators=[DataRequired()])
+    harvestdate = DateField('Fecha de Cosecha', format='%Y-%m-%d', validators=[DataRequired()])
+    productexpected =  FloatField("Producción Esperada", validators=[Optional()], default=0)
+    submit = SubmitField('Registrar el Cultivo')
     
     def validate_production_expected(self, productexpected):
         try:

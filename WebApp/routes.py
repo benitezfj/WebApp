@@ -4,6 +4,7 @@ from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapF
 from WebApp.models import User, Role, Farmland
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
+from datetime import datetime
 
 import folium
 import geemap.foliumap as geemap
@@ -134,13 +135,14 @@ def insert_farmland_data():
         db.session.add(crop)
         db.session.commit()
         flash('Se ha registrado un nuevo campo de cultivo', 'success')
-        return redirect(url_for('registercrop'))
+        return redirect(url_for('insert_farmland_data'))
     return render_template('crop.html', title='Insert a New Crop', form=form)
 
 
 
 @app.route("/land")
 def land_selection():
+    lands = Farmland.query
     return render_template('land_selection.html', title='Land', lands=lands)
 
 @app.route("/about")

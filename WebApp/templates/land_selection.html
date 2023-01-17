@@ -4,18 +4,20 @@
     <thead>
       <tr>
         <th>ID Parcela</th>
-        <th>Nombre</th>
-        <th>Tipo de cultivo</th>
-        <th>Superficie</th>
-        <th>Ciudad</th>
+        <th>Tipo de Cultivo</th>
+        <th>Fecha de Siembra</th>
+        <th>Fecha de Cosecha</th>
+        <th>Cosecha Esperada</th>
       </tr>
     </thead>
     <tbody>
       {% for land in lands %}
         <tr>
-          {% for value in land %}
-              <td>{{ value }}</td>
-          {% endfor %}
+          <td>{{ land.id }}</td>
+          <td>{{ land.croptype_id }}</td>
+          <td>{{ land.sow_date }}</td>
+          <td>{{ land.harvest_date }}</td>
+          <td>{{ land.product_expected }}</td>
         </tr>
       {% endfor %}
     </tbody>
