@@ -1,10 +1,9 @@
 from flask import render_template, url_for, flash, redirect, request
 from WebApp import app, db, bcrypt
-from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm
-from WebApp.models import User, Role, Farmland
+from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm
+from WebApp.models import User, Role, Farmland, Crop
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
-from datetime import datetime
 
 import folium
 import geemap.foliumap as geemap
@@ -22,11 +21,11 @@ posts = [
     }
 ]
 
-lands = (
-        ("ID 1", "Nombre 1", "Tipo 1", "Superficie 1", "Ciudad 1"),
-        ("ID 2", "Nombre 2", "Tipo 2", "Superficie 2", "Ciudad 2"),
-        ("ID 3", "Nombre 3", "Tipo 3", "Superficie 3", "Ciudad 3"),
-)
+# lands = (
+#         ("ID 1", "Nombre 1", "Tipo 1", "Superficie 1", "Ciudad 1"),
+#         ("ID 2", "Nombre 2", "Tipo 2", "Superficie 2", "Ciudad 2"),
+#         ("ID 3", "Nombre 3", "Tipo 3", "Superficie 3", "Ciudad 3"),
+# )
 
 roi = ee.Geometry.Polygon(-55.04541651090373, -25.45734994544611, 
                           -55.04445150202754, -25.45709054792545, 
@@ -126,10 +125,15 @@ def insert_farmland_data():
     form = InsertFarmlandForm()
     # crop = [(p.id, p.description) for p in Position.query.order_by(Position.description).all()]
     form.croptype.choices = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
+    if request.method == "POST":
+        coordinates = request.get_json()
+        # print(coordinates['features'][0]['geometry']['coordinates'])
+        form.coordinates.choices = coordinates['features'][0]['geometry']['coordinates']
     if form.validate_on_submit():
         crop = Farmland(croptype_id = form.croptype.data,
                         sow_date = form.sowdate.data,
                         harvest_date = form.harvestdate.data,
+                        coordinates = form.coordinates.data,
                         product_expected =  form.productexpected.data)
 
         db.session.add(crop)
@@ -177,9 +181,21 @@ def registerrole():
         pos = Role(description = form.description.data)
         db.session.add(pos)
         db.session.commit()
-        flash('Se ha registrado una nueva posición', 'success')
+        flash('A new role has been registered', 'success')
         return redirect(url_for('login'))
     return render_template('position.html', title='Role', form=form)
+
+
+@app.route("/crop", methods=['GET','POST'])
+def registercrop():
+    form = RegistrationCropForm()
+    if form.validate_on_submit():
+        pos = Crop(description = form.description.data)
+        db.session.add(pos)
+        db.session.commit()
+        flash('A new crop has been registered.', 'success')
+        return redirect(url_for('login'))
+    return render_template('position.html', title='Crop', form=form)
 
 
 @app.route("/login", methods=['GET','POST'])

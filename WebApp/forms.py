@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from WebApp.models import User, Role
+from WebApp.models import User, Role, Crop
 import datetime
 '''
 wtforms
@@ -54,7 +54,17 @@ class RegistrationRoleForm(FlaskForm):
     def validate_role(self, description):
         role_data = Role.query.filter_by(description=description.data).first()
         if role_data:
-            raise ValidationError('El rol ya se encuentra creado.')
+            raise ValidationError('The role is already created.')
+            
+class RegistrationCropForm(FlaskForm):
+    description = StringField('Crop', 
+                              validators=[DataRequired(), Length(min=2, max=20)])
+    submit = SubmitField('Register')
+    
+    def validate_crop(self, description):
+        crop_data = Crop.query.filter_by(description=description.data).first()
+        if crop_data:
+            raise ValidationError('The crop is already created.')
         
        
    
@@ -80,6 +90,7 @@ class InsertFarmlandForm(FlaskForm):
     sowdate = DateField('Fecha de Siembra', format='%Y-%m-%d', validators=[DataRequired()])
     harvestdate = DateField('Fecha de Cosecha', format='%Y-%m-%d', validators=[DataRequired()])
     productexpected =  FloatField("Producción Esperada", validators=[Optional()], default=0)
+    coordinates = StringField('Coordinates', validators=[Optional()])
     submit = SubmitField('Registrar el Cultivo')
     
     def validate_production_expected(self, productexpected):

@@ -115,6 +115,7 @@
             <a href='#' id='get_coords'>Get Coords</a>
             
             <script>
+              const SCRIPT_ROOT = {{ request.script_root|tojson }}
               var Map = L.map("Map");
 
               var tile_layer_openstreetmap = L.tileLayer(
@@ -200,9 +201,20 @@
                
               document.getElementById('get_coords').onclick = function(e) {
               		var data = drawnItems.toGeoJSON();
-                      	var data_geojson = JSON.stringify(data.features[0].geometry.coordinates, undefined, 2);
-                      	document.getElementById('info').textContent = data_geojson;   
+              		fetch(`${SCRIPT_ROOT}/farmland`, {
+                            method: "POST",
+                            credentials: "include",
+                            body: JSON.stringify(data),
+                            cache: "no-cache",
+                            headers: new Headers({
+                              "content-type": "application/json"
+                            })
+                          })
+                    var data_geojson = JSON.stringify(data.features[0].geometry.coordinates, undefined, 2);
+                    document.getElementById('info').textContent = data_geojson;   
                           }
+                          
+                          
             </script>
     </div>
 {% endblock %}

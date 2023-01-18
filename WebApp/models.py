@@ -40,4 +40,18 @@ class Farmland(db.Model):
     sow_date = db.Column(db.Date)
     harvest_date = db.Column(db.Date)
     product_expected =  db.Column(db.Float)
+    coordinates = db.Column(db.String(200), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"Farmland('{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_expected}', '{self.coordinates}')"
     
+    
+class Crop(db.Model):
+    __tablename__ = 'crops'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(20), unique=True, nullable=False)
+    farmlands = db.relationship('Farmland', backref='crop', lazy=True)
+    
+    def __repr__(self):
+        return f"('{self.description}')"

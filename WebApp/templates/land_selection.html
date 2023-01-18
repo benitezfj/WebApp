@@ -3,11 +3,12 @@
   <table id="data" class="table table-striped">
     <thead>
       <tr>
-        <th>ID Parcela</th>
-        <th>Tipo de Cultivo</th>
-        <th>Fecha de Siembra</th>
-        <th>Fecha de Cosecha</th>
-        <th>Cosecha Esperada</th>
+        <th>Farmland Id</th>
+        <th>Crop Type</th>
+        <th>Sow Date</th>
+        <th>Harvest Date</th>
+        <th>Expected Production</th>
+        <th>Coordinates</th>
       </tr>
     </thead>
     <tbody>
@@ -18,6 +19,7 @@
           <td>{{ land.sow_date }}</td>
           <td>{{ land.harvest_date }}</td>
           <td>{{ land.product_expected }}</td>
+          <td>{{ land.coordinates }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -33,6 +35,7 @@
           {searchable: false},
           {orderable: false, searchable: false},
           {orderable: false, searchable: false},
+          null,
           null],
       });
     });
