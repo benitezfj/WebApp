@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.role}')"
+        return f"User('{self.username}', '{self.email}', '{self.role_id}')"
 
 
 class Role(db.Model):
@@ -29,14 +29,14 @@ class Role(db.Model):
     users = db.relationship('User', backref='role', lazy=True)
     
     def __repr__(self):
-        return f"('{self.description}')"
+        return f"Role('{self.description}')"
 
 
 class Farmland(db.Model):
     __tablename__ = 'farmlands'
     
     id = db.Column(db.Integer, primary_key=True)
-    croptype_id = db.Column(db.Integer)
+    croptype_id = db.Column(db.Integer, db.ForeignKey('crops.id'))
     sow_date = db.Column(db.Date)
     harvest_date = db.Column(db.Date)
     product_expected =  db.Column(db.Float)
@@ -54,4 +54,4 @@ class Crop(db.Model):
     farmlands = db.relationship('Farmland', backref='crop', lazy=True)
     
     def __repr__(self):
-        return f"('{self.description}')"
+        return f"Crop('{self.description}')"

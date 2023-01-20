@@ -120,28 +120,41 @@ def maps():
     # else:
     #     return render_template('input.html')
 
-@app.route("/farmland", methods=['GET','POST'])
+@app.route("/farmland", methods=['GET', 'POST'])
 def insert_farmland_data():
     form = InsertFarmlandForm()
-    # crop = [(p.id, p.description) for p in Position.query.order_by(Position.description).all()]
-    form.croptype.choices = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
+    crop = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
+    form.croptype.choices = crop
     if request.method == "POST":
-        coordinates = request.get_json()
-        # print(coordinates['features'][0]['geometry']['coordinates'])
-        form.coordinates.choices = coordinates['features'][0]['geometry']['coordinates']
-    if form.validate_on_submit():
-        crop = Farmland(croptype_id = form.croptype.data,
-                        sow_date = form.sowdate.data,
-                        harvest_date = form.harvestdate.data,
-                        coordinates = form.coordinates.data,
-                        product_expected =  form.productexpected.data)
-
-        db.session.add(crop)
-        db.session.commit()
-        flash('Se ha registrado un nuevo campo de cultivo', 'success')
-        return redirect(url_for('insert_farmland_data'))
-    return render_template('crop.html', title='Insert a New Crop', form=form)
-
+        if request.is_json:
+            print(request.is_json)
+            coord = request.get_json()
+            # form.coordinates.data = coordinates['features'][0]['geometry']['coordinates']
+            coord = coord['features'][0]['geometry']['coordinates']
+            # print(coordinates['features'][0]['geometry']['coordinates'])
+            print(coord)
+        else:
+            if form.validate_on_submit():
+                print("HOLAAAAA")
+        
+                # coordinates = request.get_json(force=True)
+                # form.coordinates.choices = coordinates['features'][0]['geometry']['coordinates']
+                # print(coordinates['features'][0]['geometry']['coordinates'])
+                
+                crop = Farmland(croptype_id = form.croptype.data,
+                                sow_date = form.sowdate.data,
+                                harvest_date = form.harvestdate.data,
+                                coordinates = coord,
+                                product_expected =  form.productexpected.data)
+        
+                db.session.add(crop)
+                db.session.commit()
+                flash('Se ha registrado un nuevo campo de cultivo', 'success')
+                return redirect(url_for('insert_farmland_data'))  
+    else:
+        print(request.method)
+        return render_template('crop.html', title='Insert a New Crop', form=form)
+    
 
 
 @app.route("/land")
