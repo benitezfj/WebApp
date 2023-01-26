@@ -4,6 +4,8 @@ from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapF
 from WebApp.models import User, Role, Farmland, Crop
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
+# import json
+from datetime import datetime
 
 import folium
 import geemap.foliumap as geemap
@@ -20,12 +22,6 @@ posts = [
         ' ': ' '
     }
 ]
-
-# lands = (
-#         ("ID 1", "Nombre 1", "Tipo 1", "Superficie 1", "Ciudad 1"),
-#         ("ID 2", "Nombre 2", "Tipo 2", "Superficie 2", "Ciudad 2"),
-#         ("ID 3", "Nombre 3", "Tipo 3", "Superficie 3", "Ciudad 3"),
-# )
 
 roi = ee.Geometry.Polygon(-55.04541651090373, -25.45734994544611, 
                           -55.04445150202754, -25.45709054792545, 
@@ -101,65 +97,50 @@ def maps():
     else:
         return render_template('input.html', title='Maps', form=form)
     
-# -----------------------
-# @app.route("/maps", methods=['GET','POST'])
-# def maps():
-#     form = MapForm()
-#     if request.method == "POST":
-#         latitude = form.latitude.data
-#         longitude = form.longitude.data
-#         return render_template('results.html', title='Maps', lat=latitude , lon=longitude)
-#     else:
-#         return render_template('input.html', title='Maps', form=form)
-# -----------------------
-
-    # if request.method == "POST":
-    #     lat = request.form["lat"]
-    #     lon = request.form["lon"]
-    #     return render_template('results.html', lat=lat , lon=lon)
-    # else:
-    #     return render_template('input.html')
 
 @app.route("/farmland", methods=['GET', 'POST'])
 def insert_farmland_data():
     form = InsertFarmlandForm()
-    crop = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
-    form.croptype.choices = crop
-    if request.method == "POST":
-        if request.is_json:
-            print(request.is_json)
-            coord = request.get_json()
-            # form.coordinates.data = coordinates['features'][0]['geometry']['coordinates']
-            coord = coord['features'][0]['geometry']['coordinates']
-            # print(coordinates['features'][0]['geometry']['coordinates'])
-            print(coord)
-        else:
-            if form.validate_on_submit():
-                print("HOLAAAAA")
+    crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
+    form.croptype.choices = crops
+    # if request.method == "POST":
+    if form.validate_on_submit(): 
+        print(form.is_submitted(), "Es submitted?")
+        print(form.validate(), "Es valido?")
+        print("Holaaa")
+        print(request.content_type)
+        request_data  = request.get_json()
+        print(request_data)
+        coord = request_data['coordinates'].replace("[","").replace("]","").replace("\n","").replace(" ","")
+        crop = int(request_data['croptype'])
+        sow = datetime.strptime(request_data['sowdate'], '%Y-%m-%d').date()
+        harvest = datetime.strptime(request_data['harvestdate'], '%Y-%m-%d').date()
+        product = float(request_data['productexpected'])
         
-                # coordinates = request.get_json(force=True)
-                # form.coordinates.choices = coordinates['features'][0]['geometry']['coordinates']
-                # print(coordinates['features'][0]['geometry']['coordinates'])
-                
-                crop = Farmland(croptype_id = form.croptype.data,
-                                sow_date = form.sowdate.data,
-                                harvest_date = form.harvestdate.data,
-                                coordinates = coord,
-                                product_expected =  form.productexpected.data)
+        crop = Farmland(croptype_id = crop,
+                       sow_date = sow,
+                       harvest_date = harvest,
+                       coordinates = coord,
+                       product_expected = product)
+        # crop = Farmland(croptype_id = form.croptype.data,
+        #                sow_date = form.sowdate.data,
+        #                harvest_date = form.harvestdate.data,
+        #                coordinates = coord,
+        #                product_expected =  form.productexpected.data)
         
-                db.session.add(crop)
-                db.session.commit()
-                flash('Se ha registrado un nuevo campo de cultivo', 'success')
-                return redirect(url_for('insert_farmland_data'))  
-    else:
-        print(request.method)
-        return render_template('crop.html', title='Insert a New Crop', form=form)
-    
+        db.session.add(crop)
+        db.session.commit()
+        print("Chauuu")
+        flash('A New Crop Field has been Registered', 'success')
+        return redirect(url_for('home'))
 
+    return render_template('crop.html', title='Insert a New Crop Field', form=form)
 
 @app.route("/land")
 def land_selection():
     lands = Farmland.query
+    # lands = Farmland.query.join(Crop, Farmland.croptype_id==Crop.id).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).filter(friendships.user_id == userID).paginate(page, 1, False)
+    # lands = db.session.query(Farmland).join(Crop).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).all()
     return render_template('land_selection.html', title='Land', lands=lands)
 
 @app.route("/about")
@@ -183,7 +164,7 @@ def register():
                     password = hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash('Se ha registrado satisfactoriamente', 'success')
+        flash('You have successfully registered.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -206,9 +187,9 @@ def registercrop():
         pos = Crop(description = form.description.data)
         db.session.add(pos)
         db.session.commit()
-        flash('A new crop has been registered.', 'success')
+        flash('A new crop type has been registered.', 'success')
         return redirect(url_for('login'))
-    return render_template('position.html', title='Crop', form=form)
+    return render_template('croptype.html', title='Crop', form=form)
 
 
 @app.route("/login", methods=['GET','POST'])
@@ -223,7 +204,7 @@ def login():
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash('Error al iniciar sesión. Favor verificar el usuario y contraseña', 'danger')
+            flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 

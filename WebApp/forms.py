@@ -37,12 +37,12 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('El nombre de usuario ya se ha utilizado.')
+            raise ValidationError('That username is taken. Please choose a different one.')
         
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('El email ya se ha utilizado.')
+            raise ValidationError('That email is taken. Please choose a different one.')
     
    
 # Formulacion usado para registrar un usuario
@@ -54,7 +54,7 @@ class RegistrationRoleForm(FlaskForm):
     def validate_role(self, description):
         role_data = Role.query.filter_by(description=description.data).first()
         if role_data:
-            raise ValidationError('The role is already created.')
+            raise ValidationError('That role is already created.')
             
 class RegistrationCropForm(FlaskForm):
     description = StringField('Crop', 
@@ -64,10 +64,8 @@ class RegistrationCropForm(FlaskForm):
     def validate_crop(self, description):
         crop_data = Crop.query.filter_by(description=description.data).first()
         if crop_data:
-            raise ValidationError('The crop is already created.')
+            raise ValidationError('That crop is already created.')
         
-       
-   
 class LoginForm(FlaskForm):
     username = StringField('Username', 
                           validators=[DataRequired(), Length(min=2, max=20)])
@@ -76,41 +74,53 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
     
-
-
 class MapForm(FlaskForm):
     latitude = FloatField('Latitude', validators=[DataRequired()])           
     longitude  = FloatField('Longitude', validators=[DataRequired()])
     submit = SubmitField('Find Location')
 
+# ----------- New
+class IndexForm(FlaskForm):
+    indices = SelectField('Indices', coerce=int)
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    reducer = SelectField('Reducer', coerce=int)
+    latitude_1 = FloatField('Latitude 1', validators=[DataRequired()])
+    longitude_1  = FloatField('Longitude 1', validators=[DataRequired()])
+    latitude_2 = FloatField('Latitude 2', validators=[DataRequired()])
+    longitude_2  = FloatField('Longitude 2', validators=[DataRequired()])
+    cloud_cover =  FloatField("Cloud Cover (%)", validators=[Optional()], default=0)
+    submit = SubmitField('Find Index')
+# -----------     
+    
 # ----------------------------Ingreso de Datos
 # ----------------------------Cabecera
 class InsertFarmlandForm(FlaskForm):
-    croptype = SelectField('Tipo de Cultivo', coerce=int)
-    sowdate = DateField('Fecha de Siembra', format='%Y-%m-%d', validators=[DataRequired()])
-    harvestdate = DateField('Fecha de Cosecha', format='%Y-%m-%d', validators=[DataRequired()])
-    productexpected =  FloatField("Producción Esperada", validators=[Optional()], default=0)
-    coordinates = StringField('Coordinates', validators=[Optional()])
-    submit = SubmitField('Registrar el Cultivo')
+    croptype = SelectField('Crop Type', coerce=int)
+    sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
+    harvestdate = DateField('Harvest', format='%Y-%m-%d', validators=[DataRequired()])
+    productexpected =  FloatField("Expected Harvest (tons)", validators=[Optional()], default=0)
+    submit = SubmitField('Register the Crop Field.')
+    coordinates = StringField('Coordinates')
     
     def validate_production_expected(self, productexpected):
         try:
             prod_exp = float(productexpected.data)
         except ValueError:
-            raise ValidationError("Produccion Esperada Invalida.")
+            raise ValidationError("Invalid Expected Harvest Data.")
         if prod_exp < 0:
-            raise ValidationError("La producción esperada debe ser positiva")
+            raise ValidationError("The Expected Harvest must be a Positive Value.")
         if prod_exp == "":
-            raise ValidationError("La producción esperada no puede estar vacia.")
+            raise ValidationError("The Expected Harvest can not be empty.")
             
     def validate_dates(self, sowdate, harvestdate):
         try:
             sow_date = datetime.date(sowdate.data)
             harvest_date = datetime.date(harvestdate.data)
         except ValueError:
-            raise ValidationError("La fecha de siembra o cosecha invalida.")
+            raise ValidationError("Invalid Seedtime or Harvest Time.")
         if sow_date >= harvest_date:
-            raise ValidationError("La fecha de cosecha debe ser posterior a la fecha de siembra.")
+            raise ValidationError("The Harvest Date must be after the Seedtime.")
             
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):

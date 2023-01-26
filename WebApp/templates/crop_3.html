@@ -1,0 +1,343 @@
+<html>
+<head>
+
+    <style>
+        html {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+    </style>
+    <style>
+        body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+    </style>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    
+    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+            
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.css"/>    
+    
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>  
+
+    <style>
+        #Map {
+          position: relative;
+          width: 100.0%;
+          height: 100.0%;
+          left: 0.0%;
+          top: 0.0%;
+        }
+    </style>
+    
+    <style>
+        #get_coords {
+          position: static;
+          top: 5px;
+          right: 150px;
+          z-index: 999;
+          background: white;
+          color: black;
+          padding: 1px;
+          border-radius: 4px;
+          font-family: 'Helvetica Neue';
+          cursor: pointer;
+          font-size: 12px;
+          text-decoration: none;
+          top: 9px;
+        }
+
+    </style>
+        
+    {% if title %}
+        <title>Fertilizer Meter - {{ title }}</title>
+    {% else %}
+        <title>Fertilizer Meter</title>
+    {% endif %}
+</head>
+
+<body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/">Fertilizer Meter</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              {% if current_user.is_authenticated %}
+                  <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+                  <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+                  <a class="nav-item nav-link" href="{{ url_for('land_selection') }}">Farmland</a>
+                  <a class="nav-item nav-link" href="{{ url_for('maps') }}">Index</a>
+                  <a class="nav-item nav-link" href="{{ url_for('insert_farmland_data') }}">Crop Field</a>
+                  <a class="nav-item nav-link" href="#">Fertilization</a>
+              {% else %}
+                  <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+              {% endif %}
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {% if current_user.is_authenticated %}
+                        <a class="dropdown-item" href="{{ url_for('registerrole') }}">Role</a>
+                        <a class="dropdown-item" href="{{ url_for('registercrop') }}">Crop Type</a>
+                        <a class="dropdown-item" href="{{ url_for('account') }}">Account</a>
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                        <a class="dropdown-item" href="{{ url_for('login') }}">Login</a>
+                        <a class="dropdown-item" href="{{ url_for('register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- End -->
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </main>
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Register a New Crop Field</legend>
+                <div class="form-group">
+                    {{ form.croptype.label(class="form-control-label") }}
+    
+                    {% if form.croptype.errors %} 
+                        {{ form.croptype(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.croptype.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.croptype(class="form-control form-control-lg", id="croptype") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                     <label class="form-control-label" for="info">Coordinates</label>
+                     <input type="text" readonly class="form-control form-control-lg" id="info" disabled />
+                     <div class="folium-map" id="Map" ></div>
+                     <a href='#' id='get_coords' class="btn btn-outline-info">Get Coords</a>                    
+                </div>
+                <div class="form-group">
+                    {{ form.sowdate.label(class="form-control-label") }}
+                    
+                    {% if form.sowdate.errors %}
+                        {{ form.sowdate(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sowdate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sowdate(class="form-control form-control-lg", id="sowdate") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.harvestdate.label(class="form-control-label") }}
+                    
+                    {% if form.harvestdate.errors %}
+                        {{ form.harvestdate(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.harvestdate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.harvestdate(class="form-control form-control-lg", id="harvestdate") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.productexpected.label(class="form-control-label") }}
+                    
+                    {% if form.productexpected.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.productexpected.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.productexpected(class="form-control form-control-lg", id="productexpected") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info", id="submit") }}
+            </div>
+        </form>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>    
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>   
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>     
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</body>
+<script>                        
+    var Map = L.map("Map");
+    
+    var tile_layer_openstreetmap = L.tileLayer(
+    	"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 30, "maxZoom": 30, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+    ).addTo(Map);
+    
+    var tile_layer_google_maps = L.tileLayer(
+    	"https://mt1.google.com/vt/lyrs=m\u0026x={x}\u0026y={y}\u0026z={z}",{
+            "attribution": "Google", 
+            "detectRetina": false, 
+            "maxNativeZoom": 22, 
+            "maxZoom": 22, 
+            "minZoom": 0, 
+            "noWrap": false, 
+            "opacity": 1, 
+            "subdomains": "abc", 
+            "tms": false}
+    ).addTo(Map);
+    
+    var tile_layer_google_satellite = L.tileLayer(
+    	"https://mt1.google.com/vt/lyrs=y\u0026x={x}\u0026y={y}\u0026z={z}",{
+            "attribution": "Google", 
+            "detectRetina": false, 
+            "maxNativeZoom": 22, 
+            "maxZoom": 22, 
+            "minZoom": 0, 
+            "noWrap": false, 
+            "opacity": 1, 
+            "subdomains": "abc", 
+            "tms": false}
+    ).addTo(Map);
+    
+    L.Control.geocoder({"collapsed": true, "defaultMarkGeocode": true, "position": "topleft"}).on('markgeocode', function(e) {
+                    Map.setView(e.geocode.center, 11);
+                }).addTo(Map);
+                
+    Map.fitBounds(
+    	[[-24, -55], [-24, -55]],
+            {"maxZoom": 6}
+    );
+    
+    var layer_control = {
+    	base_layers : {
+    		"openstreetmap" : tile_layer_openstreetmap,
+            },
+            overlays :  {
+            	"Google Maps" : tile_layer_google_maps,
+              "Google Satellite" : tile_layer_google_satellite,
+            },
+    };
+    
+    L.control.layers(
+    	layer_control.base_layers,
+            layer_control.overlays,
+            {"autoZIndex": true, "collapsed": true, "position": "topright"}
+    ).addTo(Map);
+                
+    var options = {
+    	position: "topleft",
+            draw: {},
+            edit: {},
+    }
+                
+    var drawnItems = new L.featureGroup().addTo(Map);
+    options.edit.featureGroup = drawnItems;
+    var draw_control = new L.Control.Draw(options).addTo(Map);
+    
+    Map.on(L.Draw.Event.CREATED, function(e) {
+                    		var layer = e.layer,
+                        		    type = e.layerType;
+                    		var coords = JSON.stringify(layer.toGeoJSON());
+                    		layer.on('click', function() {
+                        				alert(coords);
+                        				console.log(coords);
+                    		});
+                    		drawnItems.addLayer(layer);
+    });
+    
+    Map.on('draw:created', function(e) {
+    	drawnItems.addLayer(e.layer);
+    });      
+    
+    document.getElementById('get_coords').onclick = function(e) {
+        var data = drawnItems.toGeoJSON();
+        var data_geojson = JSON.stringify(data.features[0].geometry.coordinates, undefined, 2);
+        document.getElementById("info").value = data_geojson;
+    }
+
+    
+    document.getElementById('submit').onclick = function(e) {        
+        var data = drawnItems.toGeoJSON();
+        
+        var coord = data.features[0].geometry.coordinates;
+        var croptype = $("#croptype").val();
+        var sow_date = $("#sowdate").val();
+        var harvest_date = $("#harvestdate").val();
+        var productexpected = $("#productexpected").val();
+        
+        var farm = {"crop_type": croptype, "sowdate": sow_date, "harvestdate": harvest_date, "productexpected": productexpected, "coordinates": coord};
+        
+        console.log(JSON.stringify(farm));
+        
+        
+        fetch('/farmland', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(farm)
+        })
+        .then((response) => {
+            return response.json();
+        });
+    }
+</script>
+</html>
