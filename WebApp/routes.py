@@ -23,11 +23,23 @@ posts = [
     }
 ]
 
-roi = ee.Geometry.Polygon(-55.04541651090373, -25.45734994544611, 
-                          -55.04445150202754, -25.45709054792545, 
-                          -55.04466969093059, -25.45626820569725, 
-                          -55.04565972074376, -25.45647942106365, 
-                          -55.04541651090373, -25.45734994544611)
+# roi = ee.Geometry.Polygon(-55.04541651090373, -25.45734994544611, 
+#                           -55.04445150202754, -25.45709054792545, 
+#                           -55.04466969093059, -25.45626820569725, 
+#                           -55.04565972074376, -25.45647942106365, 
+#                           -55.04541651090373, -25.45734994544611)
+
+roi = ee.Geometry.Polygon(-73.531065,45.136161,
+                            -73.497934,45.116298,
+                            -73.47167,45.158438,
+                            -73.498106,45.174898,
+                            -73.531065,45.136161)
+
+roi2 = ee.Geometry.Polygon(-73.490467, 45.180207,
+                          -73.447895, 45.159633,
+                          -73.435707, 45.172825,
+                          -73.476048, 45.191943,
+                          -73.490467, 45.180207)
 
 rgbFilter = {'min': 1, 'max': 3000, 'gamma': 1.5, 'bands': ['B4', 'B3', 'B2']}
 nrgbFilter = {'min': 1, 'max': 3000, 'gamma': 1.5, 'bands': ['B8', 'B4', 'B3']}
@@ -53,6 +65,8 @@ def home():
 @app.route("/maps", methods=['GET','POST'])
 def maps():
     form = MapForm()
+    lands = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.id).all()]
+    form.farmland.choices = lands
     if request.method == "POST":
         latitude = form.latitude.data
         longitude = form.longitude.data
@@ -62,14 +76,14 @@ def maps():
         Map.add_basemap('HYBRID')
 
         # ----Earth Engine Extraction-----
-        start_date = '2022-12-01'
-        end_date = '2022-12-27'
+        start_date = '2022-08-22'
+        end_date = '2022-09-12'
 
         # featureCollection = ee.FeatureCollection(json.loads(geo_json))
         collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
             .filterDate(start_date, end_date) \
-            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',10)) \
-            .filterBounds(roi) \
+            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',100)) \
+            .filterBounds(roi2) \
             .sort('system:time_start', False) 
             
         collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
@@ -103,21 +117,22 @@ def insert_farmland_data():
     form = InsertFarmlandForm()
     crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
     form.croptype.choices = crops
-    # if request.method == "POST":
     if form.validate_on_submit(): 
-        print(form.is_submitted(), "Es submitted?")
-        print(form.validate(), "Es valido?")
-        print("Holaaa")
-        print(request.content_type)
+        # print(form.is_submitted(), "Es submitted?")
+        # print(form.validate(), "Es valido?")
+        # print("Holaaa")
+        # print(request.content_type)
         request_data  = request.get_json()
-        print(request_data)
+        # print(request_data)
+        descrip = request_data['name']
         coord = request_data['coordinates'].replace("[","").replace("]","").replace("\n","").replace(" ","")
         crop = int(request_data['croptype'])
         sow = datetime.strptime(request_data['sowdate'], '%Y-%m-%d').date()
         harvest = datetime.strptime(request_data['harvestdate'], '%Y-%m-%d').date()
         product = float(request_data['productexpected'])
         
-        crop = Farmland(croptype_id = crop,
+        crop = Farmland(name = descrip,
+                       croptype_id = crop,
                        sow_date = sow,
                        harvest_date = harvest,
                        coordinates = coord,
@@ -130,17 +145,24 @@ def insert_farmland_data():
         
         db.session.add(crop)
         db.session.commit()
-        print("Chauuu")
+        # print("Chauuu")
         flash('A New Crop Field has been Registered', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('insert_farmland_data'))
 
     return render_template('crop.html', title='Insert a New Crop Field', form=form)
 
 @app.route("/land")
 def land_selection():
-    lands = Farmland.query
-    # lands = Farmland.query.join(Crop, Farmland.croptype_id==Crop.id).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).filter(friendships.user_id == userID).paginate(page, 1, False)
-    # lands = db.session.query(Farmland).join(Crop).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).all()
+    # lands = Farmland.query
+    # lands = Farmland.query.join(Crop, Farmland.croptype_id==Crop.id).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).filter(friendships.user_id == userID).paginate(page, 1, False).all()
+    # select a.id, 
+             # b.description, 
+             # a.sow_date, 
+             # a.harvest_date, 
+             # a.product_expected, 
+             # a.coordinates from farmlands a join crops b on a.croptype_id = b.id;
+    lands = db.session.query(Farmland).join(Crop).add_columns(Farmland.id, Farmland.name, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id)
+   
     return render_template('land_selection.html', title='Land', lands=lands)
 
 @app.route("/about")

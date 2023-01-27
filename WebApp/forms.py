@@ -75,6 +75,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
     
 class MapForm(FlaskForm):
+    farmland = SelectField('Farmland', coerce=int)
     latitude = FloatField('Latitude', validators=[DataRequired()])           
     longitude  = FloatField('Longitude', validators=[DataRequired()])
     submit = SubmitField('Find Location')
@@ -96,12 +97,14 @@ class IndexForm(FlaskForm):
 # ----------------------------Ingreso de Datos
 # ----------------------------Cabecera
 class InsertFarmlandForm(FlaskForm):
+    name = StringField('Farmland Description', 
+                              validators=[DataRequired(), Length(min=2, max=50)])
     croptype = SelectField('Crop Type', coerce=int)
     sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
     harvestdate = DateField('Harvest', format='%Y-%m-%d', validators=[DataRequired()])
     productexpected =  FloatField("Expected Harvest (tons)", validators=[Optional()], default=0)
+    coordinates = StringField('Coordinates', validators=[DataRequired()])
     submit = SubmitField('Register the Crop Field.')
-    coordinates = StringField('Coordinates')
     
     def validate_production_expected(self, productexpected):
         try:

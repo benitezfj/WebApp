@@ -44,6 +44,20 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Register a New Crop Field</legend>
                 <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+
+                    {% if form.name.errors %} 
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {{ form.croptype.label(class="form-control-label") }}
 
                     {% if form.croptype.errors %} 
@@ -70,13 +84,15 @@
                          </div>
                      {% else %}
                          {{ form.coordinates(class="form-control form-control-lg") }}
-
-                         <div class="folium-map" id="Map" ></div>
-                         
-                         <a href='#' id='get_coords' class="btn btn-outline-info">Get Coords</a>                         
                      {% endif %}
                     
                 </div>
+                <div class="form-group">   
+                
+                    <div class="folium-map" id="Map" ></div>
+                    <a href='#' id='get_coords' class="btn btn-outline-info">Get Coords</a>   
+                                
+                </div>             
                 <div class="form-group">
                     {{ form.sowdate.label(class="form-control-label") }}
                     

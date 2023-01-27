@@ -9,7 +9,7 @@ if __name__ == '__main__':
 # 
 # from WebApp import db, app
 # app.app_context().push()
-# from WebApp.models import User, Role, Farmland, Crop
+# from WebApp.models import User, Role, Farmland, Crop, Historical
 # db.create_all()
 
 # Create three roles
@@ -67,3 +67,4 @@ if __name__ == '__main__':
 # import inspect
 # lines = inspect.getsource(foo)
 # print(lines)
+# DELETE FROM tables;

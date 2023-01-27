@@ -4,6 +4,7 @@
     <thead>
       <tr>
         <th>Farmland Id</th>
+        <th>Farmland Description</th>
         <th>Crop Type</th>
         <th>Sow Date</th>
         <th>Harvest Date</th>
@@ -15,7 +16,8 @@
       {% for land in lands %}
         <tr>
           <td>{{ land.id }}</td>
-          <td>{{ land.croptype_id }}</td>
+          <td>{{ land.name }}</td>
+          <td>{{ land.description }}</td>
           <td>{{ land.sow_date }}</td>
           <td>{{ land.harvest_date }}</td>
           <td>{{ land.product_expected }}</td>
