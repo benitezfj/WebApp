@@ -76,22 +76,23 @@ class LoginForm(FlaskForm):
     
 class MapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
-    latitude = FloatField('Latitude', validators=[DataRequired()])           
-    longitude  = FloatField('Longitude', validators=[DataRequired()])
+    # coordinates = StringField('Coordinates', validators=[DataRequired()])
+    # indices = SelectField('Indices', coerce=int)
+    # start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    # end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    # reducer = SelectField('Reducer', coerce=int)
+    # cloud_cover =  FloatField("Cloud Cover (%)", validators=[Optional()], default=0)
     submit = SubmitField('Find Location')
+    # latitude = FloatField('Latitude', validators=[DataRequired()])           
+    # longitude  = FloatField('Longitude', validators=[DataRequired()])
 
 # ----------- New
-class IndexForm(FlaskForm):
-    indices = SelectField('Indices', coerce=int)
-    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
-    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
-    reducer = SelectField('Reducer', coerce=int)
-    latitude_1 = FloatField('Latitude 1', validators=[DataRequired()])
-    longitude_1  = FloatField('Longitude 1', validators=[DataRequired()])
-    latitude_2 = FloatField('Latitude 2', validators=[DataRequired()])
-    longitude_2  = FloatField('Longitude 2', validators=[DataRequired()])
-    cloud_cover =  FloatField("Cloud Cover (%)", validators=[Optional()], default=0)
-    submit = SubmitField('Find Index')
+# class IndexForm(FlaskForm):
+#     latitude_1 = FloatField('Latitude 1', validators=[DataRequired()])
+#     longitude_1  = FloatField('Longitude 1', validators=[DataRequired()])
+#     latitude_2 = FloatField('Latitude 2', validators=[DataRequired()])
+#     longitude_2  = FloatField('Longitude 2', validators=[DataRequired()])
+#     submit = SubmitField('Find Index')
 # -----------     
     
 # ----------------------------Ingreso de Datos

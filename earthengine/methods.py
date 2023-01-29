@@ -73,6 +73,22 @@ def getCWSI(image):
 
     return(image)
 
+
+def calculo_ndvi(image):
+    result = image.expression('b(24) >= 0.9 ? (200*0.7) : (b(24) >= 0.7 ? (200*1) : (200 * 1.1))').rename('result1')
+
+    image = image.addBands(result)
+
+    return(image)
+
+# var result = image.expression(
+#       "(b('b7') > hT) ? 3 : (b('b7')  > mean) ? 2 : (b('b7') < lT) ? 1 : 0 ",
+#       {
+#       'hT': hT ,
+#       'mean': ee.Number(meanV.get('b7')),
+#       'lT': lT
+# });
+
 def image_to_map_id(image_name, vis_params={}):
   try:
     ee_image = ee.Image(image_name)
@@ -91,11 +107,8 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
     collection = ee_product['collection']
     index = ee_product['index']
     vis_params = ee_product['vis_params']
-    
-    
-        
-    collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
-    collection = collection.map(getCWSI)    
+            
+
     
     #cloud_mask = ee_product.get('cloud_mask', None)
     try:
@@ -114,7 +127,11 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
         if cloudy:
             ee_collection = ee_collection.filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',cloudy))
         
+        ee_collection = ee_collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
+        ee_collection = ee_collection.map(getCWSI)    
+        
         ee_collection = ee_collection.sort('system:time_start', False) 
+
         
         '''
         if cloud_mask:
