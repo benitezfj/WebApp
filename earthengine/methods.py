@@ -81,13 +81,21 @@ def calculo_ndvi(image):
 
     return(image)
 
-# var result = image.expression(
-#       "(b('b7') > hT) ? 3 : (b('b7')  > mean) ? 2 : (b('b7') < lT) ? 1 : 0 ",
-#       {
-#       'hT': hT ,
-#       'mean': ee.Number(meanV.get('b7')),
-#       'lT': lT
-# });
+def calculo_ndvi(image, fos):
+    result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('result1')
+    image = image.addBands(result)
+    return(image)
+    
+
+
+# def calculo_ndvi(image):
+#     var result = image.expression(
+#           "(b('b7') > hT) ? 3 : (b('b7')  > mean) ? 2 : (b('b7') < lT) ? 1 : 0 ",
+#           {
+#           'hT': hT ,
+#           'mean': ee.Number(meanV.get('b7')),
+#           'lT': lT
+#           });
 
 def image_to_map_id(image_name, vis_params={}):
   try:

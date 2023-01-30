@@ -4,7 +4,7 @@ from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapF
 from WebApp.models import User, Role, Farmland, Crop
 from flask_login import login_user, current_user, logout_user, login_required
 from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI, get_image_collection_asset
-# import json
+import json
 import numpy as np
 from datetime import datetime
 
@@ -84,17 +84,29 @@ def maps():
     # if request.method == "POST":
         farm_id = form.farmland.data
         # print(farm_id)
+        index = form.indices.data
+        # print(index)
+        start_date = form.start_date.data
+        start_date = start_date.strftime("%Y-%m-%d")
+        # print(start_date)
+        end_date = form.end_date.data
+        end_date = end_date.strftime("%Y-%m-%d")
+        # print(end_date)
+        coverage = form.cloud_cover.data
+        # print(coverage)
+        
+        
         lands = Farmland.query.get_or_404(farm_id)
         crop_descrip = lands.crop.description
-        print(crop_descrip)
+        # print(crop_descrip)
         harvest_date = lands.harvest_date.strftime("%Y-%m-%d")
-        print(harvest_date)
+        # print(harvest_date)
         sow_date = lands.sow_date.strftime("%Y-%m-%d")
-        print(sow_date)
+        # print(sow_date)
         product_expected = lands.product_expected
-        print(product_expected)
+        # print(product_expected)
         coord = np.array(lands.coordinates.split(','))
-        print(coord)
+        # print(coord)
         roi= ee.Geometry.Polygon([float(i) for i in coord])
         lon = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
         lat = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
@@ -115,32 +127,69 @@ def maps():
         
         
         figure = folium.Figure()
-        Map = geemap.Map(center=(lat, lon), zoom = 6, plugin_Draw = True, Draw_export = False, plugin_LayerControl = False)
+        Map = geemap.Map(center=(lat, lon), zoom = 16, plugin_Draw = False, Draw_export = False, plugin_LayerControl = False)
         Map.add_basemap('HYBRID')
 
         # get_image_collection_asset()
         # # ----Earth Engine Extraction-----
-        start_date = '2015-06-23'
-        end_date = '2023-01-20'
+        # start_date = '2015-06-23'
+        # end_date = '2023-01-20'
 
         # featureCollection = ee.FeatureCollection(json.loads(geo_json))
+        print(start_date, "Fecha de inicio")
+        print(end_date, "Fecha de fin")
+        print(roi)
+        print(coverage)
+        
         collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
             .filterDate(start_date, end_date) \
-            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',100)) \
+            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',coverage)) \
             .filterBounds(roi) \
             .sort('system:time_start', False) 
             
-        collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
-        collection = collection.map(getCWSI)    
+        if index == 1:
+            print("NDVI es calculado.")
+            collection = collection.map(addDate).map(getNDVI)
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
+        elif index == 2:
+            print("GNDVI")
+            collection = collection.map(addDate).map(getGNDVI)            
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
+        elif index == 3:
+            print("NDSI")
+            collection = collection.map(addDate).map(getNDSI)
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
+        elif index == 4:
+            print("RECL")
+            collection = collection.map(addDate).map(getReCl)
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
+        elif index == 5:
+            print("NDWI")
+            collection = collection.map(addDate).map(getNDWI)
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('NDWI'), vis, 'NDWI')
+        else: 
+            print("CWSI")
+            collection = collection.map(addDate).map(getNDVI).map(getNDWI)
+            collection = collection.map(getCWSI)
+            clipped = collection.map(lambda image: image.clip(roi))
+            Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
+
+        # collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
+        # collection = collection.map(getCWSI)    
         
-        clipped = collection.map(lambda image: image.clip(roi))
-        Map.addLayer(clipped.first(),           nrgbFilter, 'Cetapar Maiz - False RGB')
-        Map.addLayer(clipped.first(),           rgbFilter,  'Cetapar Maiz - RGB')
-        Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
-        Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
-        Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
-        Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
-        Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
+        # clipped = collection.map(lambda image: image.clip(roi))
+        # Map.addLayer(clipped.first(),           nrgbFilter, 'Cetapar Maiz - False RGB')
+        # Map.addLayer(clipped.first(),           rgbFilter,  'Cetapar Maiz - RGB')
+        # Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
+        # Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
+        # Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
+        # Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
+        # Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
         Map.addLayer(ee.Image().paint(roi,0,2), {},         'Region of Interest')
         # new_result=imageClipped_2022_08_22.expression('b(24) >= 0.9 ? (200*0.7) : (b(24) >= 0.7 ? (200*1) : (200 * 1.1))').rename('result1')
         Map.add_colorbar(vis, label="Scale", layer_name="SRTM DEM")
@@ -174,12 +223,6 @@ def maps():
 
 
 
-
-
-
-
-   
-
 @app.route("/farmland", methods=['GET', 'POST'])
 @login_required
 def insert_farmland_data():
@@ -189,7 +232,6 @@ def insert_farmland_data():
     if form.validate_on_submit(): 
         # print(form.is_submitted(), "Es submitted?")
         # print(form.validate(), "Es valido?")
-        # print("Holaaa")
         # print(request.content_type)
         request_data  = request.get_json()
         # print(request_data)

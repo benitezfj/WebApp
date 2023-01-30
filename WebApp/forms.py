@@ -76,15 +76,41 @@ class LoginForm(FlaskForm):
     
 class MapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
-    # coordinates = StringField('Coordinates', validators=[DataRequired()])
-    # indices = SelectField('Indices', coerce=int)
-    # start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
-    # end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
-    # reducer = SelectField('Reducer', coerce=int)
-    # cloud_cover =  FloatField("Cloud Cover (%)", validators=[Optional()], default=0)
+    indices = SelectField('Index to Calculate', coerce=int, choices=[(1, 'NDVI'), (2, 'GNDVI'), (3, 'NDSI'), (4, 'RECL'), (5, 'NDWI'), (6, 'CWSI')])
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    cloud_cover =  FloatField("Cloud Coverage (%)", validators=[Optional()], default=10)
     submit = SubmitField('Find Location')
-    # latitude = FloatField('Latitude', validators=[DataRequired()])           
-    # longitude  = FloatField('Longitude', validators=[DataRequired()])
+    def validate_dates(self, start_date, end_date):
+        try:
+            startdate = datetime.date(start_date.data)
+            enddate = datetime.date(end_date.data)
+        except ValueError:
+            raise ValidationError("Invalid End Date or Start Date.")
+        if (startdate > enddate):
+            raise ValidationError("The End Date must be after Start Date.")
+        today_date = datetime.datetime.now()
+        today_date = datetime.date(today_date.year, today_date.month, today_date.day)
+        if (startdate > today_date):
+            raise ValidationError("The End Date can not be later the Current Date.")
+    def validate_cloud_cover(self, cloud_cover):
+        try:
+            cloud = float(cloud_cover.data)
+        except ValueError:
+            raise ValidationError("Invalid Expected Harvest Data.")
+        if cloud < 0:
+            raise ValidationError("Cloud Coverage must be a Positive Value.")
+        if cloud > 100:
+            raise ValidationError("Cloud Coverage cannot be greater than 100%")
+        if cloud < 10:
+            raise ValidationError("Cloud Coverage cannot be less than 10%")
+        if cloud == "":
+            raise ValidationError("Cloud Coverage cannot be empty.")
+
+# coordinates = StringField('Coordinates', validators=[DataRequired()])
+# reducer = SelectField('Reducer', coerce=int, choices=[('1', 'Moderator'), ('2', 'Janitor')])
+# latitude = FloatField('Latitude', validators=[DataRequired()])           
+# longitude  = FloatField('Longitude', validators=[DataRequired()])
 
 # ----------- New
 # class IndexForm(FlaskForm):
