@@ -74,12 +74,12 @@ def getCWSI(image):
     return(image)
 
 
-def calculo_ndvi(image):
-    result = image.expression('b(24) >= 0.9 ? (200*0.7) : (b(24) >= 0.7 ? (200*1) : (200 * 1.1))').rename('result1')
+# def calculo_ndvi(image):
+#     result = image.expression('b(24) >= 0.9 ? (200*0.7) : (b(24) >= 0.7 ? (200*1) : (200 * 1.1))').rename('result1')
 
-    image = image.addBands(result)
+#     image = image.addBands(result)
 
-    return(image)
+#     return(image)
 
 def calculo_ndvi(image, fos):
     result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('result1')
@@ -106,37 +106,70 @@ def image_to_map_id(image_name, vis_params={}):
   except EEException as e:
      logging.error('An error occurred while attempting to retrieve the map id.', e)
 
-def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from=None, date_to=None, roi=None,reducer='median'):
+def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from=None, date_to=None, roi=None, index=None, reducer='median'):
     """
     Get tile url for image collection asset.
     """
     ee_product = EE_PRODUCTS[platform][sensor][product]
 
     collection = ee_product['collection']
-    index = ee_product['index']
-    vis_params = ee_product['vis_params']
+    # index = ee_product['index']
+    vis_params = ee_product['vis_index']
             
-
+    # collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
+    #     .filterDate(start_date, end_date) \
+    #     .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',coverage)) \
+    #     .filterBounds(roi) \
+    #     .sort('system:time_start', False) 
     
     #cloud_mask = ee_product.get('cloud_mask', None)
     try:
+        print(index)
         ee_collection = ee.ImageCollection(collection)
 
         if date_from and date_to:
             ee_filter_date = ee.Filter.date(date_from, date_to)
             ee_collection = ee_collection.filter(ee_filter_date)
 
-        if index:
-            ee_collection = ee_collection.select(index)
+        # if index:
+            # ee_collection = ee_collection.select(index)
             
-        if index:
+        if roi:
             ee_collection = ee_collection.filterBounds(roi)
+            ee_collection = ee_collection.map(lambda image: image.clip(roi))
+            
+        if index == 1:
+            print("NDVI")
+            ee_collection = ee_collection.map(addDate).map(getNDVI)
+            index = "NDVI"
+        elif index == 2:
+            print("GNDVI")
+            ee_collection = ee_collection.map(addDate).map(getGNDVI)
+            index = "GNDVI"
+        elif index == 3:
+            print("NDSI")
+            ee_collection = ee_collection.map(addDate).map(getNDSI)
+            index = "NDSI"
+        elif index == 4:
+            print("RECL")
+            ee_collection = ee_collection.map(addDate).map(getReCl)
+            index = "ReCl"
+        elif index == 5:
+            print("NDWI")
+            ee_collection = ee_collection.map(addDate).map(getNDWI)
+            index = "NDWI"
+        else: 
+            print("CWSI")
+            ee_collection = ee_collection.map(addDate).map(getNDVI).map(getNDWI)
+            ee_collection = ee_collection.map(getCWSI)
+            index = "CWSI"
             
         if cloudy:
             ee_collection = ee_collection.filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',cloudy))
+                    
         
-        ee_collection = ee_collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
-        ee_collection = ee_collection.map(getCWSI)    
+        # ee_collection = ee_collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
+        # ee_collection = ee_collection.map(getCWSI)    
         
         ee_collection = ee_collection.sort('system:time_start', False) 
 
@@ -150,7 +183,7 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
         if reducer:
             ee_collection = getattr(ee_collection, reducer)()
 
-        tile_url = image_to_map_id(ee_collection, vis_params)
+        tile_url = image_to_map_id(ee_collection.select(index), vis_params)
 
         return tile_url
 

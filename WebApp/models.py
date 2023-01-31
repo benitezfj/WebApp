@@ -59,7 +59,7 @@ class Farmland(db.Model):
                                       backref=db.backref('historical', lazy='joined'), 
                                       lazy=True)
     def __repr__(self):
-        return f"Farmland('{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_expected}', '{self.coordinates}')"
+        return f"Farmland('{self.name}', '{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_expected}', '{self.coordinates}')"
     
 
 class Crop(db.Model):

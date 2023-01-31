@@ -160,7 +160,7 @@ class FertilizarForm(FlaskForm):
     observation = StringField('Obs', validators=[Length(min=2, max=150)])
     submit = SubmitField('Register Fertilizer Data')
     
-class TreatmentForm(FlaskForm): 
+class TreatmentForm(FlaskForm):
     treatment = StringField('Treatment')
     treatmenttype = SelectMultipleField('TreatmentType', coerce=int)
     treatmentdate = DateField('TreatmentDate')

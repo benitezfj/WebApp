@@ -1,22 +1,161 @@
 {% extends "layout.html" %}
+
+{% block head %}
+    <style type="text/css">
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        #Map {
+          position: relative;
+          width: 50.0%;
+          height: 65.0%;
+          left: 0.0%;
+          top: 0.0%;
+        }
+
+    </style>
+              
+{% endblock %}
+
 {% block content %}
-    <div id="map"></div>
+    <div class="content-section">
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Calculate indices</legend>
 
-    <script>
-        var map = L.map('map').setView([{{lat}}, {{lon}}], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'}).addTo(map);
-        map.pm.addControls({
-                            position: 'topleft',  
-                            drawCircle: false,  
-                            drawRectangle: false,
-                            drawPolyline: false,
-                            drawCircleMarker: false,
-                            drawText: false,
-                            editMode: false,
-                            dragMode: false,
-                            cutPolygon: false,
-                            rotateMode: false,
-                           }); 
-    </script>
-{% endblock content %}
-
+            
+            <div class="form-group">
+            	{{ form.farmland.label(class="form-control-label") }}
+            	<p class="form-control form-control-lg" type="text" id="farmland" disabled></p>
+            </div>
+            <div class="form-group">
+            	{{ form.indices.label(class="form-control-label") }}
+            	<p class="form-control form-control-lg" type="text" id="indices" disabled></p>
+            </div>
+            <div class="form-group">
+            	{{ form.start_date.label(class="form-control-label") }}
+            	<p class="form-control form-control-lg" type="text" id="start_date" disabled></p>
+            </div>
+            <div class="form-group">
+            	{{ form.end_date.label(class="form-control-label") }}
+            	<p  class="form-control form-control-lg" type="text" id="end_date" disabled></p>
+            </div>
+            <div class="form-group">
+            	{{ form.cloud_cover.label(class="form-control-label") }}
+            	<p class="form-control form-control-lg" type="text" id="cloud_cover" disabled></p>
+            </div>
+            
+            <div class="form-group">   
+                <div class="folium-map" id="Map" ></div>
+            </div>
+            
+        </fieldset>    
+        <script>
+        
+            var maps_config = JSON.parse('{{ maps|tojson|safe }}');
+            
+            var Map = L.map("Map");
+            
+            var tile_layer_openstreetmap = L.tileLayer(
+            	"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 30, "maxZoom": 30, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(Map);
+                                
+            var tile_layer_google_maps = L.tileLayer(
+            	"https://mt1.google.com/vt/lyrs=m\u0026x={x}\u0026y={y}\u0026z={z}",{
+                    "attribution": "Google", 
+                    "detectRetina": false, 
+                    "maxNativeZoom": 22, 
+                    "maxZoom": 22, 
+                    "minZoom": 0, 
+                    "noWrap": false, 
+                    "opacity": 1, 
+                    "subdomains": "abc", 
+                    "tms": false}
+            ).addTo(Map);
+            
+            var tile_layer_google_satellite = L.tileLayer(
+            	"https://mt1.google.com/vt/lyrs=y\u0026x={x}\u0026y={y}\u0026z={z}",{
+                    "attribution": "Google", 
+                    "detectRetina": false, 
+                    "maxNativeZoom": 22, 
+                    "maxZoom": 22, 
+                    "minZoom": 0, 
+                    "noWrap": false, 
+                    "opacity": 1, 
+                    "subdomains": "abc", 
+                    "tms": false}
+            ).addTo(Map);
+            
+            var gee_layer = L.tileLayer(maps_config.map_url, { attribution: '&copy; <a href="https://www.earthengine.google.com/copyright">Google Earth Engine</a>'}).addTo(Map);
+            
+            L.Control.geocoder({"collapsed": true, "defaultMarkGeocode": true, "position": "topleft"}).on('markgeocode', function(e) {
+                            Map.setView(e.geocode.center, 11);
+                        }).addTo(Map);        
+                
+            Map.fitBounds(
+            	[[maps_config.latitude, maps_config.longitude], [maps_config.latitude, maps_config.longitude]],
+                    {"maxZoom": 12}
+            );
+            
+            var layer_control = {
+            	base_layers : {
+            		"openstreetmap" : tile_layer_openstreetmap,
+                    },
+                overlays :  {
+                    "Google Maps" : tile_layer_google_maps,
+                    "Google Satellite" : tile_layer_google_satellite,
+                    "Google Earth Engine" : gee_layer,
+                },
+            };
+            
+            L.control.layers(
+            	layer_control.base_layers,
+                    layer_control.overlays,
+                    {"autoZIndex": true, "collapsed": true, "position": "topright"}
+            ).addTo(Map);
+                        
+            var options = {
+            	position: "topleft",
+                    draw: {
+                        polygon : false,
+                        polyline : false,
+                        rectangle : false,     // Rectangles disabled
+                        circle : false,        // Circles disabled 
+                        circlemarker : false,  // Circle markers disabled
+                        marker: true
+                    },
+                    edit: {},
+            }
+                        
+            
+            var drawnItems = new L.featureGroup().addTo(Map);
+            options.edit.featureGroup = drawnItems;
+            var draw_control = new L.Control.Draw(options).addTo(Map);
+            
+            Map.on(L.Draw.Event.CREATED, function(e) {
+                            		var layer = e.layer,
+                                		    type = e.layerType;
+                            		var coords = JSON.stringify(layer.toGeoJSON());
+                            		layer.on('click', function() {
+                                				alert(coords);
+                                				console.log(coords);
+                            		});
+                            		drawnItems.addLayer(layer);
+            });
+            Map.on('draw:created', function(e) {
+            	drawnItems.addLayer(e.layer);
+            });
+            
+            document.getElementById('farmland').innerText = maps_config.farmland_name;
+            document.getElementById('indices').innerText = maps_config.index_name;
+            document.getElementById('start_date').innerText = maps_config.start;
+            document.getElementById('end_date').innerText = maps_config.end;
+            document.getElementById('cloud_cover').innerText = maps_config.cover;
+            
+        </script>
+    </div>    
+{% endblock %}

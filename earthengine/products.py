@@ -109,6 +109,18 @@ EE_PRODUCTS = {
                     'max': 3000, 
                     'gamma': 1.5
                 },
+                'vis_index': {'min': -1, 'max': 1,
+                       'palette': [
+                          '#d73027',
+                          '#f46d43',
+                          '#fdae61',
+                          '#fee08b',
+                          '#d9ef8b',
+                          '#a6d96a',
+                          '#66bd63',
+                          '#1a9850'
+                       ]
+                },
                 'start_date': '2015-06-23',
                 'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present
             },
@@ -121,6 +133,20 @@ EE_PRODUCTS = {
                     'min': 1, 
                     'max': 3000, 
                     'gamma': 1.5
+                },
+                'vis_index': {
+                    'min': -1, 
+                    'max': 1,
+                    'palette': [
+                          '#d73027',
+                          '#f46d43',
+                          '#fdae61',
+                          '#fee08b',
+                          '#d9ef8b',
+                          '#a6d96a',
+                          '#66bd63',
+                          '#1a9850'
+                    ]
                 },
                 'start_date': '2017-03-28',
                 'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present

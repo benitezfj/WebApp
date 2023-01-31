@@ -3,13 +3,13 @@ from WebApp import app, db, bcrypt
 from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm
 from WebApp.models import User, Role, Farmland, Crop
 from flask_login import login_user, current_user, logout_user, login_required
-from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI, get_image_collection_asset
-import json
 import numpy as np
 from datetime import datetime
-
-import folium
-import geemap.foliumap as geemap
+from earthengine.methods import get_image_collection_asset
+# from earthengine.methods import addDate, getNDVI, getGNDVI, getNDSI, getReCl, getNDWI, getCWSI
+import json
+# import folium
+# import geemap.foliumap as geemap
 
 import ee
 
@@ -75,133 +75,100 @@ def home():
 @app.route("/maps", methods=['GET','POST'])
 @login_required
 def maps():
-    # Farmland.query.get_or_404(id)
-    # farmland = Farmland.query
     form = MapForm()
     form.farmland.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).all()]
-    # lands = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).all()]
+    
     if form.validate_on_submit(): 
-    # if request.method == "POST":
-        farm_id = form.farmland.data
-        # print(farm_id)
-        index = form.indices.data
-        # print(index)
-        start_date = form.start_date.data
-        start_date = start_date.strftime("%Y-%m-%d")
-        # print(start_date)
-        end_date = form.end_date.data
-        end_date = end_date.strftime("%Y-%m-%d")
-        # print(end_date)
-        coverage = form.cloud_cover.data
-        # print(coverage)
+        farm_id     = form.farmland.data
+        index       = form.indices.data
+        start_date  = form.start_date.data
+        end_date    = form.end_date.data
+        coverage    = form.cloud_cover.data
+        
+        start_date  = start_date.strftime("%Y-%m-%d")
+        end_date    = end_date.strftime("%Y-%m-%d")
         
         
-        lands = Farmland.query.get_or_404(farm_id)
-        crop_descrip = lands.crop.description
-        # print(crop_descrip)
-        harvest_date = lands.harvest_date.strftime("%Y-%m-%d")
-        # print(harvest_date)
-        sow_date = lands.sow_date.strftime("%Y-%m-%d")
-        # print(sow_date)
-        product_expected = lands.product_expected
-        # print(product_expected)
-        coord = np.array(lands.coordinates.split(','))
-        # print(coord)
-        roi= ee.Geometry.Polygon([float(i) for i in coord])
-        lon = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
-        lat = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
-        # coord = coord.astype(float)
+        lands           = Farmland.query.get_or_404(farm_id)
+        crop_descrip    = lands.crop.description
+        farmland_name   = lands.name
+        coord           = np.array(lands.coordinates.split(','))
         
-        # lands.coordinates
-        # lands.coordinates
-        # form.coordinates.data = coord.split(','), farm_data.coordinates
-        # coord = np.array(coord)
-        # coord = coord.astype(float)
+        roi             = ee.Geometry.Polygon([float(i) for i in coord])
+        lon             = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
+        lat             = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
         
-        # # coord.reshape(4,2).tolist() 4=fila, 2=columnas
-        # latitude = form.latitude.data
-        # longitude = form.longitude.data
-        # Crop = Crop.query.get(lands.croptype_id).description
-        # print(form.is_submitted(), "Es submitted?")
-        # print(form.validate(), "Es valido?")
+        # harvest_date = lands.harvest_date.strftime("%Y-%m-%d")
+        # sow_date = lands.sow_date.strftime("%Y-%m-%d")
+        # product_expected = lands.product_expected
         
+        # figure = folium.Figure()
+        # Map = geemap.Map(center=(lat, lon), zoom = 16, plugin_Draw = False, Draw_export = False, plugin_LayerControl = False)
+        # Map.add_basemap('HYBRID')
         
-        figure = folium.Figure()
-        Map = geemap.Map(center=(lat, lon), zoom = 16, plugin_Draw = False, Draw_export = False, plugin_LayerControl = False)
-        Map.add_basemap('HYBRID')
-
-        # get_image_collection_asset()
-        # # ----Earth Engine Extraction-----
-        # start_date = '2015-06-23'
-        # end_date = '2023-01-20'
-
-        # featureCollection = ee.FeatureCollection(json.loads(geo_json))
-        print(start_date, "Fecha de inicio")
-        print(end_date, "Fecha de fin")
-        print(roi)
-        print(coverage)
-        
-        collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
-            .filterDate(start_date, end_date) \
-            .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',coverage)) \
-            .filterBounds(roi) \
-            .sort('system:time_start', False) 
+        # collection =  ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
+        #     .filterDate(start_date, end_date) \
+        #     .filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',coverage)) \
+        #     .filterBounds(roi) \
+        #     .sort('system:time_start', False) 
             
-        if index == 1:
-            print("NDVI es calculado.")
-            collection = collection.map(addDate).map(getNDVI)
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
-        elif index == 2:
-            print("GNDVI")
-            collection = collection.map(addDate).map(getGNDVI)            
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
-        elif index == 3:
-            print("NDSI")
-            collection = collection.map(addDate).map(getNDSI)
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
-        elif index == 4:
-            print("RECL")
-            collection = collection.map(addDate).map(getReCl)
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
-        elif index == 5:
-            print("NDWI")
-            collection = collection.map(addDate).map(getNDWI)
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('NDWI'), vis, 'NDWI')
-        else: 
-            print("CWSI")
-            collection = collection.map(addDate).map(getNDVI).map(getNDWI)
-            collection = collection.map(getCWSI)
-            clipped = collection.map(lambda image: image.clip(roi))
-            Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
+        # if index == 1:
+        #     collection = collection.map(addDate).map(getNDVI)
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
+        # elif index == 2:
+        #     collection = collection.map(addDate).map(getGNDVI)            
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
+        # elif index == 3:
+        #     collection = collection.map(addDate).map(getNDSI)
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
+        # elif index == 4:
+        #     collection = collection.map(addDate).map(getReCl)
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
+        # elif index == 5:
+        #     collection = collection.map(addDate).map(getNDWI)
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('NDWI'), vis, 'NDWI')
+        # else: 
+        #     collection = collection.map(addDate).map(getNDVI).map(getNDWI)
+        #     collection = collection.map(getCWSI)
+        #     clipped = collection.map(lambda image: image.clip(roi))
+        #     Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
 
-        # collection = collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
-        # collection = collection.map(getCWSI)    
+        # Map.addLayer(ee.Image().paint(roi,0,2), {},         'Region of Interest')
+        # Map.add_colorbar(vis, label="Scale", layer_name="SRTM DEM")
         
-        # clipped = collection.map(lambda image: image.clip(roi))
-        # Map.addLayer(clipped.first(),           nrgbFilter, 'Cetapar Maiz - False RGB')
-        # Map.addLayer(clipped.first(),           rgbFilter,  'Cetapar Maiz - RGB')
-        # Map.addLayer(clipped.first().select('NDVI'), vis, 'NDVI')
-        # Map.addLayer(clipped.first().select('GNDVI'),vis, 'GNDVI')
-        # Map.addLayer(clipped.first().select('NDSI'), vis, 'NDSI')
-        # Map.addLayer(clipped.first().select('ReCl'), vis, 'ReCl')
-        # Map.addLayer(clipped.first().select('CWSI'), vis, 'CWSI')
-        Map.addLayer(ee.Image().paint(roi,0,2), {},         'Region of Interest')
-        # new_result=imageClipped_2022_08_22.expression('b(24) >= 0.9 ? (200*0.7) : (b(24) >= 0.7 ? (200*1) : (200 * 1.1))').rename('result1')
-        Map.add_colorbar(vis, label="Scale", layer_name="SRTM DEM")
-
-        # # Map.centerObject(roi,17)
-        # # ---------------------------------
-        map_url = get_image_collection_asset(platform='sentinel', sensor='2', product='TOA', cloudy=10, date_from=start_date , date_to=end_date, roi=roi,reducer='median')
+        map_url = get_image_collection_asset(platform='sentinel', 
+                                             sensor='2', 
+                                             product='BOA', 
+                                             cloudy = coverage, 
+                                             date_from = start_date, 
+                                             date_to = end_date, 
+                                             roi = roi, 
+                                             index = index, 
+                                             reducer = 'median')
         print(map_url)
-        Map.add_to(figure)
-
-        # # figure.render()
-        return render_template('results2.html', title='Maps', maps=figure.render())
+        # Map.add_to(figure)
+        list_index = [(1, 'NDVI'), (2, 'GNDVI'), (3, 'NDSI'), (4, 'RECL'), (5, 'NDWI'), (6, 'CWSI')]
+        list_index = list_index[index][1]
+        
+        map_json = {'map_url': map_url, 
+                    'latitude': lat, 
+                    'longitude': lon,
+                    'farmland_name': farmland_name,
+                    'index_name': list_index,
+                    'start': start_date,
+                    'end': end_date,
+                    'cover': coverage}    
+        
+        # map_json = json.dumps(map_json)
+        print(map_json)
+        
+        # return render_template('results2.html', title='Maps', maps=figure.render())
+        return render_template('results.html', title='Maps', maps=map_json, form=form)
     # else:
     return render_template('input.html', title='Maps', form=form)
  
@@ -230,11 +197,7 @@ def insert_farmland_data():
     crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
     form.croptype.choices = crops
     if form.validate_on_submit(): 
-        # print(form.is_submitted(), "Es submitted?")
-        # print(form.validate(), "Es valido?")
-        # print(request.content_type)
         request_data  = request.get_json()
-        # print(request_data)
         descrip = request_data['name']
         coord = request_data['coordinates'].replace("[","").replace("]","").replace("\n","").replace(" ","")
         crop = int(request_data['croptype'])
@@ -248,15 +211,9 @@ def insert_farmland_data():
                        harvest_date = harvest,
                        coordinates = coord,
                        product_expected = product)
-        # crop = Farmland(croptype_id = form.croptype.data,
-        #                sow_date = form.sowdate.data,
-        #                harvest_date = form.harvestdate.data,
-        #                coordinates = coord,
-        #                product_expected =  form.productexpected.data)
         
         db.session.add(crop)
         db.session.commit()
-        # print("Chauuu")
         flash('A New Crop Field has been Registered', 'success')
         return redirect(url_for('insert_farmland_data'))
 
@@ -265,14 +222,6 @@ def insert_farmland_data():
 @app.route("/land")
 @login_required
 def land_selection():
-    # lands = Farmland.query
-    # lands = Farmland.query.join(Crop, Farmland.croptype_id==Crop.id).add_columns(Farmland.id, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id).filter(friendships.user_id == userID).paginate(page, 1, False).all()
-    # select a.id, 
-             # b.description, 
-             # a.sow_date, 
-             # a.harvest_date, 
-             # a.product_expected, 
-             # a.coordinates from farmlands a join crops b on a.croptype_id = b.id;
     lands = db.session.query(Farmland).join(Crop).add_columns(Farmland.id, Farmland.name, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id)
    
     return render_template('land_selection.html', title='Land', lands=lands)

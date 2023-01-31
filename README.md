@@ -53,6 +53,10 @@ sowing and harvest periods, fertilizer measurement, etc.
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/index.png?raw=true)
 
-### Crop Water Stress Index (Google Earth Engine)
+### Calculated Index: GNDVI (Green Normalized Difference Vegetation Index)
+
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/index_1.png?raw=true)
+
+### CWSI (Crop Water Stress Index) Imagery extracted by Google Earth Engine
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/CWSI.png?raw=true)
