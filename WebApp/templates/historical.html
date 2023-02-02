@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Historic Farmland Register</legend>
+                <div class="form-group">
+                    {{ form.current_farm_id.label(class="form-control-label") }}
+
+                    {% if form.current_farm_id.errors %} 
+                        {{ form.current_farm_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.current_farm_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.current_farm_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.historical_farm_id.label(class="form-control-label") }}
+                    
+                    {% if form.historical_farm_id.errors %}
+                        {{ form.historical_farm_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.historical_farm_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.historical_farm_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.productobtained.label(class="form-control-label") }}
+                    
+                    {% if form.productobtained.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.productobtained.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.productobtained(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+    
+    <div class="content-section">
+        <table id="data" class="table table-striped">
+          <thead>
+            <tr>
+              <th>Current Farmland Name</th>
+              <th>Historic Farmland Name</th>
+              <th>Current Sow Date</th>
+              <th>Historic Sow Date</th>
+              <th>Current Harvest Date</th>
+              <th>Historic Harvest Date</th>
+              <th>Current Expected Production</th>
+              <th>Historic Expected Production</th>
+              <th>Production Obtained</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for historic in historics %}
+              <tr>
+                <td>{{ historic.current_name }}</td>
+                <td>{{ historic.historic_name }}</td>
+                <td>{{ historic.current_sow_date }}</td>
+                <td>{{ historic.historic_sow_date }}</td>
+                <td>{{ historic.current_harvest_date }}</td>
+                <td>{{ historic.historic_harvest_date }}</td>
+                <td>{{ historic.current_production }}</td>
+                <td>{{ historic.historic_production }}</td>
+                <td>{{ historic.production_obtained }}</td>
+                
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        columns: [
+          null,
+          {searchable: false},
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
+          null,
+          null],
+      });
+    });
+  </script>
+{% endblock %}

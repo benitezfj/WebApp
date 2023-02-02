@@ -24,7 +24,7 @@
 {% block content %}
     <div class="content-section">
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Calculate indices</legend>
+            <legend class="border-bottom mb-4">Calculate Posology</legend>
 
             
             <div class="form-group">
@@ -32,12 +32,12 @@
             	<p class="form-control form-control-lg" type="text" id="farmland" disabled></p>
             </div>
             <div class="form-group">
-            	{{ form.indices.label(class="form-control-label") }}
-            	<p class="form-control form-control-lg" type="text" id="indices" disabled></p>
+            	{{ form.posology.label(class="form-control-label") }}
+            	<p class="form-control form-control-lg" type="text" id="posology" disabled></p>
             </div>
             <div class="form-group">
-            	{{ form.index_date.label(class="form-control-label") }}
-            	<p class="form-control form-control-lg" type="text" id="index_date" disabled></p>
+            	<label class="form-control-label">Posology Date</label>
+            	<p class="form-control form-control-lg" type="text" id="posology_date" disabled></p>
             </div>
             <div class="form-group">
             	<label class="form-control-label">Cloud Coverage (%)</label>
@@ -147,9 +147,10 @@
             });
             
             document.getElementById('farmland').innerText = maps_config.farmland_name;
-            document.getElementById('indices').innerText = maps_config.index_name;
-            document.getElementById('index_date').innerText = maps_config.indexdate;
+            document.getElementById('posology').innerText = maps_config.posology_value;
+            document.getElementById('posology_date').innerText = maps_config.posologydate;
             document.getElementById('cloud_cover').innerText = maps_config.cover;
+ 
             
         </script>
     </div>    

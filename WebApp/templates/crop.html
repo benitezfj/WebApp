@@ -83,7 +83,7 @@
                              {% endfor %}
                          </div>
                      {% else %}
-                         {{ form.coordinates(class="form-control form-control-lg") }}
+                         {{ form.coordinates(class="form-control form-control-lg", disabled=True) }}
                      {% endif %}
                     
                 </div>
@@ -206,7 +206,14 @@
                         
             var options = {
             	position: "topleft",
-                    draw: {},
+                    draw: {
+                        polygon : true,
+                        polyline : false,
+                        rectangle : false,     // Rectangles disabled
+                        circle : false,        // Circles disabled 
+                        circlemarker : false,  // Circle markers disabled
+                        marker: false
+                    },
                     edit: {},
             }
                         

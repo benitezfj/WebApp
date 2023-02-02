@@ -3,10 +3,9 @@ ee==0.4
 Flask==2.2.2
 Flask_Bcrypt==1.0.1
 Flask_Login==0.6.2
-flask_sqlalchemy==3.0.2
+flask_sqlalchemy==3.0.3
 Flask_WTF==1.0.1
-folium==0.14.0
-geemap==0.19.1
 numpy==1.21.5
 overpy==0.6
+SQLAlchemy==1.4.39
 WTForms==3.0.1

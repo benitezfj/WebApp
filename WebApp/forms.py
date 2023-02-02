@@ -74,43 +74,45 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
     
+
 class MapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
     indices = SelectField('Index to Calculate', coerce=int, choices=[(1, 'NDVI'), (2, 'GNDVI'), (3, 'NDSI'), (4, 'RECL'), (5, 'NDWI'), (6, 'CWSI')])
-    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
-    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
-    cloud_cover =  FloatField("Cloud Coverage (%)", validators=[Optional()], default=10)
+    index_date = DateField('Index Date', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Find Location')
-    def validate_dates(self, start_date, end_date):
+    def validate_dates(self, index_date):
         try:
-            startdate = datetime.date(start_date.data)
-            enddate = datetime.date(end_date.data)
+            indexdate = datetime.date(index_date.data)
+            print(indexdate)
         except ValueError:
             raise ValidationError("Invalid End Date or Start Date.")
-        if (startdate > enddate):
-            raise ValidationError("The End Date must be after Start Date.")
         today_date = datetime.datetime.now()
         today_date = datetime.date(today_date.year, today_date.month, today_date.day)
-        if (startdate > today_date):
-            raise ValidationError("The End Date can not be later the Current Date.")
-    def validate_cloud_cover(self, cloud_cover):
-        try:
-            cloud = float(cloud_cover.data)
-        except ValueError:
-            raise ValidationError("Invalid Expected Harvest Data.")
-        if cloud < 0:
-            raise ValidationError("Cloud Coverage must be a Positive Value.")
-        if cloud > 100:
-            raise ValidationError("Cloud Coverage cannot be greater than 100%")
-        if cloud < 10:
-            raise ValidationError("Cloud Coverage cannot be less than 10%")
-        if cloud == "":
-            raise ValidationError("Cloud Coverage cannot be empty.")
+        print(indexdate > today_date)
+        if (indexdate > today_date):
+            raise ValidationError("The Index Date can not be later the Current Date.")
+            
+    # cloud_cover =  FloatField("Cloud Coverage (%)", validators=[Optional()], default=60)    
+    # start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    # coordinates = StringField('Coordinates', validators=[DataRequired()])
+    # reducer = SelectField('Reducer', coerce=int, choices=[('1', 'Moderator'), ('2', 'Janitor')])
+    # latitude = FloatField('Latitude', validators=[DataRequired()])           
+    # longitude  = FloatField('Longitude', validators=[DataRequired()])    
+    # def validate_cloud_cover(self, cloud_cover):
+    #     try:
+    #         cloud = float(cloud_cover.data)
+    #     except ValueError:
+    #         raise ValidationError("Invalid Expected Harvest Data.")
+    #     if cloud != 60:
+    #         raise ValidationError("Cloud Coverage must be a equal to 60%")
+    #     if cloud > 100:
+    #         raise ValidationError("Cloud Coverage cannot be greater than 100%")
+    #     if cloud < 10:
+    #         raise ValidationError("Cloud Coverage cannot be less than 10%")
+    #     if cloud == "":
+    #         raise ValidationError("Cloud Coverage cannot be empty.")
 
-# coordinates = StringField('Coordinates', validators=[DataRequired()])
-# reducer = SelectField('Reducer', coerce=int, choices=[('1', 'Moderator'), ('2', 'Janitor')])
-# latitude = FloatField('Latitude', validators=[DataRequired()])           
-# longitude  = FloatField('Longitude', validators=[DataRequired()])
+
 
 # ----------- New
 # class IndexForm(FlaskForm):
@@ -129,7 +131,7 @@ class InsertFarmlandForm(FlaskForm):
     croptype = SelectField('Crop Type', coerce=int)
     sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
     harvestdate = DateField('Harvest', format='%Y-%m-%d', validators=[DataRequired()])
-    productexpected =  FloatField("Expected Harvest (tons)", validators=[Optional()], default=0)
+    productexpected =  FloatField("Production Expected (tons)", validators=[Optional()], default=0)
     coordinates = StringField('Coordinates', validators=[DataRequired()])
     submit = SubmitField('Register the Crop Field.')
     
@@ -137,11 +139,11 @@ class InsertFarmlandForm(FlaskForm):
         try:
             prod_exp = float(productexpected.data)
         except ValueError:
-            raise ValidationError("Invalid Expected Harvest Data.")
+            raise ValidationError("Invalid Production Harvest Data.")
         if prod_exp < 0:
-            raise ValidationError("The Expected Harvest must be a Positive Value.")
+            raise ValidationError("The Production Expected must be a Positive Value.")
         if prod_exp == "":
-            raise ValidationError("The Expected Harvest can not be empty.")
+            raise ValidationError("The Production Expected can not be empty.")
             
     def validate_dates(self, sowdate, harvestdate):
         try:
@@ -151,6 +153,38 @@ class InsertFarmlandForm(FlaskForm):
             raise ValidationError("Invalid Seedtime or Harvest Time.")
         if sow_date >= harvest_date:
             raise ValidationError("The Harvest Date must be after the Seedtime.")
+            
+            
+class HistoricalForm(FlaskForm):
+    current_farm_id = SelectField('Current Farmland', coerce=int)
+    historical_farm_id = SelectField('Historical Farmland', coerce=int)
+    productobtained = FloatField("Production Obtained (tons)", validators=[Optional()], default=0)
+    submit = SubmitField('Register the Historic Farmland.')
+    
+    def validate_production_obtained(self, productobtained):
+        try:
+            prod_obt = float(productobtained.data)
+        except ValueError:
+            raise ValidationError("Invalid Production Obtained Data.")
+        if prod_obt < 0:
+            raise ValidationError("The Production Obtained must be a Positive Value.")
+        if prod_obt == "":
+            raise ValidationError("The Production Obtained can not be empty.")
+
+
+class FertilizarMapForm(FlaskForm):
+    farmland = SelectField('Farmland', coerce=int)
+    posology = FloatField("Posology", validators=[Optional()], default=1)
+    submit = SubmitField('Calculate Fertilizer Map')
+    def validate_posology(self, posology):
+        try:
+            pos = float(posology.data)
+        except ValueError:
+            raise ValidationError("Invalid Posology Data.")
+        if pos <= 0:
+            raise ValidationError("Posology must be a Positive Value.")
+        if pos == "":
+            raise ValidationError("Posology can not be empty.")
             
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):

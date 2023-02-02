@@ -81,13 +81,12 @@ def getCWSI(image):
 
 #     return(image)
 
-def calculo_ndvi(image, fos):
-    result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('result1')
+def posology_ndvi(image, fos):
+    result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('posology')
     image = image.addBands(result)
     return(image)
     
-
-
+    
 # def calculo_ndvi(image):
 #     var result = image.expression(
 #           "(b('b7') > hT) ? 3 : (b('b7')  > mean) ? 2 : (b('b7') < lT) ? 1 : 0 ",
@@ -124,9 +123,12 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
     
     #cloud_mask = ee_product.get('cloud_mask', None)
     try:
-        print(index)
+        # print(index)
         ee_collection = ee.ImageCollection(collection)
-
+        
+        if date_from is None:
+            date_from = ee_product['start_date']
+            
         if date_from and date_to:
             ee_filter_date = ee.Filter.date(date_from, date_to)
             ee_collection = ee_collection.filter(ee_filter_date)
@@ -139,27 +141,21 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
             ee_collection = ee_collection.map(lambda image: image.clip(roi))
             
         if index == 1:
-            print("NDVI")
             ee_collection = ee_collection.map(addDate).map(getNDVI)
             index = "NDVI"
         elif index == 2:
-            print("GNDVI")
             ee_collection = ee_collection.map(addDate).map(getGNDVI)
             index = "GNDVI"
         elif index == 3:
-            print("NDSI")
             ee_collection = ee_collection.map(addDate).map(getNDSI)
             index = "NDSI"
         elif index == 4:
-            print("RECL")
             ee_collection = ee_collection.map(addDate).map(getReCl)
             index = "ReCl"
         elif index == 5:
-            print("NDWI")
             ee_collection = ee_collection.map(addDate).map(getNDWI)
             index = "NDWI"
         else: 
-            print("CWSI")
             ee_collection = ee_collection.map(addDate).map(getNDVI).map(getNDWI)
             ee_collection = ee_collection.map(getCWSI)
             index = "CWSI"
@@ -167,10 +163,7 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
         if cloudy:
             ee_collection = ee_collection.filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',cloudy))
                     
-        
-        # ee_collection = ee_collection.map(addDate).map(getNDVI).map(getGNDVI).map(getNDSI).map(getReCl).map(getNDWI)
-        # ee_collection = ee_collection.map(getCWSI)    
-        
+                
         ee_collection = ee_collection.sort('system:time_start', False) 
 
         
@@ -182,10 +175,87 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
         '''
         if reducer:
             ee_collection = getattr(ee_collection, reducer)()
-
+            
         tile_url = image_to_map_id(ee_collection.select(index), vis_params)
 
-        return tile_url
+        return tile_url, index
+
+    except EEException as e:
+        logging.error("The following exception occured", e)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+def get_fertilizer_map(platform, sensor, product, cloudy=None, date_from=None, date_to=None, roi=None, posology=None, posology_data=None, reducer='first'):
+    """
+    Get tile url for image collection asset.
+    """
+    ee_product = EE_PRODUCTS[platform][sensor][product]
+
+    collection = ee_product['collection']
+    vis_params = ee_product['vis_index']
+    vis_params.update({'min': posology_data*1.1, 'max': posology_data*0.7})
+    try:
+        ee_collection = ee.ImageCollection(collection)
+        
+        if date_from is None:
+            date_from = ee_product['start_date']
+
+        if date_to is None:
+            date_to = ee_product['end_date']
+
+        if date_from and date_to:
+            print(date_from, "Start Date")
+            print(date_to, "End Date")
+            ee_filter_date = ee.Filter.date(date_from, date_to)
+            ee_collection = ee_collection.filter(ee_filter_date)
+
+        if roi:
+            ee_collection = ee_collection.filterBounds(roi)
+            ee_collection = ee_collection.map(lambda image: image.clip(roi))
+
+        if cloudy:
+            ee_collection = ee_collection.filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',cloudy))
+
+        ee_collection = ee_collection.sort('system:time_start', False)
+
+        if reducer:
+            ee_collection = getattr(ee_collection, reducer)()
+
+        # Posology Index added when require add more.
+        if posology is None:
+           posology = 1;
+
+        if posology == 1:
+            # Posology is calculated only for one image, through map function is not necessary
+            ee_collection = addDate(ee_collection)
+            ee_collection = getNDVI(ee_collection)
+            ee_collection = posology_ndvi(ee_collection, posology_data)
+            ee_collection = ee_collection.clip(roi)
+        
+        print(ee_collection.date().format('YYYY-MM-dd').getInfo()) 
+        tile_url = image_to_map_id(ee_collection.select('posology'), vis_params)
+
+        return tile_url, date_to
 
     except EEException as e:
         logging.error("The following exception occured", e)

@@ -10,11 +10,11 @@ sowing and harvest periods, fertilizer measurement, etc.
 - User/Role Registration
 - View registered land
 - Search a location
+- Extract Index
+- Search by land acres (Polygon)
 
 ## Next Funcionalities
-- Extract Index
 - Fertilization calendars
-- Search by land acres (Polygon)
 - Export Data
 
 ## Images
@@ -60,3 +60,21 @@ sowing and harvest periods, fertilizer measurement, etc.
 ### CWSI (Crop Water Stress Index) Imagery extracted by Google Earth Engine
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/CWSI.png?raw=true)
+
+## Install
+To install the Web App, clone the repository and install the dependency:
+
+```shell
+$ git clone https://github.com/benitezfj/WebApp.git
+$ cd WebApp
+$ pip install -r requirements.txt
+```
+
+Then, in the folder run the project:
+```shell
+$ python run.py
+```
+
+
+
+

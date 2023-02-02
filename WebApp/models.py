@@ -1,6 +1,5 @@
 from WebApp import db, login_manager
 from flask_login import UserMixin
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -31,14 +30,15 @@ class Role(db.Model):
     def __repr__(self):
         return f"Role('{self.description}')"
 
+
 class Historical(db.Model):
     __tablename__ = 'historical'
     current_farm_id = db.Column(db.Integer, db.ForeignKey('farmlands.id'), primary_key=True)
     historical_farm_id = db.Column(db.Integer, db.ForeignKey('farmlands.id'), primary_key=True)
-    
+    product_obtained = db.Column(db.Float)
     def __repr__(self):
         return f"Historical('{self.current_farm_id}', '{self.historical_farm_id}')"
-    
+
 
 class Farmland(db.Model):
     __tablename__ = 'farmlands'
@@ -48,7 +48,7 @@ class Farmland(db.Model):
     croptype_id = db.Column(db.Integer, db.ForeignKey('crops.id'))
     sow_date = db.Column(db.Date)
     harvest_date = db.Column(db.Date)
-    product_expected =  db.Column(db.Float)
+    product_expected = db.Column(db.Float)
     coordinates = db.Column(db.String(200), unique=True, nullable=False)
     current_farm = db.relationship('Historical', 
                                    foreign_keys=[Historical.current_farm_id], 
@@ -60,7 +60,7 @@ class Farmland(db.Model):
                                       lazy=True)
     def __repr__(self):
         return f"Farmland('{self.name}', '{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_expected}', '{self.coordinates}')"
-    
+
 
 class Crop(db.Model):
     __tablename__ = 'crops'
