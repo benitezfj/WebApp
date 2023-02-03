@@ -39,12 +39,6 @@ sowing and harvest periods, fertilizer measurement, etc.
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/login.png?raw=true)
 
-### Coordinate location finder
-
-![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/location_2.png?raw=true)
-
-![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/location_1.png?raw=true)
-
 ### Farmland registration
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/farmland.png?raw=true)
@@ -53,13 +47,19 @@ sowing and harvest periods, fertilizer measurement, etc.
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/index.png?raw=true)
 
-### Calculated Index: GNDVI (Green Normalized Difference Vegetation Index)
+### Calculated Index: GNDVI (Green Normalized Difference Vegetation Index) Imagery extracted by Google Earth Engine
 
 ![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/index_1.png?raw=true)
 
-### CWSI (Crop Water Stress Index) Imagery extracted by Google Earth Engine
+### Calculated Index: CWSI (Crop Water Stress Index) Imagery extracted by Google Earth Engine
 
-![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/CWSI.png?raw=true)
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/index_2.png?raw=true)
+
+### Fertilizer Map
+
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/posology.png?raw=true)
+
+![](https://github.com/benitezfj/WebApp/blob/master/WebApp/static/images/posology_1.png?raw=true)
 
 ## Install
 To install the Web App, clone the repository and install the dependency:
@@ -75,6 +75,8 @@ Then, in the folder run the project:
 $ python run.py
 ```
 
-
-
-
+## Note
+Keep in mind that to can use the Google Earth Engine (GEE), the user must gives 
+access to GEE services to their Google account. After that, locally install 
+Google Cloud (gcloud) SDK and configure it, more information [here](https://cloud.google.com/sdk/docs/configurations?hl=es-419)
+and [here](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)

@@ -50,11 +50,11 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               {% if current_user.is_authenticated %}
-                  <a class="nav-item nav-link" href="{{ url_for('land_selection') }}">Farmland List</a>
-                  <a class="nav-item nav-link" href="{{ url_for('insert_farmland_data') }}">Crop Field Data</a>
-                  <a class="nav-item nav-link" href="{{ url_for('historical') }}">Historical Data</a>
-                  <a class="nav-item nav-link" href="{{ url_for('fertilizer_maps') }}">Fertilization Map</a>
-                  <a class="nav-item nav-link" href="{{ url_for('maps') }}">Map Index</a>
+                  <a class="nav-item nav-link" href="{{ url_for('main.land_selection') }}">Farmland List</a>
+                  <a class="nav-item nav-link" href="{{ url_for('main.insert_farmland_data') }}">Crop Field Data</a>
+                  <a class="nav-item nav-link" href="{{ url_for('main.historical') }}">Historical Data</a>
+                  <a class="nav-item nav-link" href="{{ url_for('main.fertilizer_maps') }}">Fertilization Map</a>
+                  <a class="nav-item nav-link" href="{{ url_for('main.maps') }}">Map Index</a>
               {% else %}
 
               {% endif %}
@@ -64,15 +64,15 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if current_user.is_authenticated %}
-                        <a class="dropdown-item" href="{{ url_for('registerrole') }}">Role</a>
-                        <a class="dropdown-item" href="{{ url_for('registercrop') }}">Crop Type</a>
-                        <a class="dropdown-item" href="{{ url_for('account') }}">Account</a>
-                        <a class="dropdown-item" href="{{ url_for('about') }}">About</a>
-                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="dropdown-item" href="{{ url_for('main.registerrole') }}">Role</a>
+                        <a class="dropdown-item" href="{{ url_for('main.registercrop') }}">Crop Type</a>
+                        <a class="dropdown-item" href="{{ url_for('main.account') }}">Account</a>
+                        <a class="dropdown-item" href="{{ url_for('main.about') }}">About</a>
+                        <a class="dropdown-item" href="{{ url_for('main.logout') }}">Logout</a>
                     {% else %}
-                        <a class="dropdown-item" href="{{ url_for('login') }}">Login</a>
-                        <a class="dropdown-item" href="{{ url_for('register') }}">Register</a>
-                        <a class="dropdown-item" href="{{ url_for('about') }}">About</a>
+                        <a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a>
+                        <a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a>
+                        <a class="dropdown-item" href="{{ url_for('main.about') }}">About</a>
                     {% endif %}
                 </div>
             </div>

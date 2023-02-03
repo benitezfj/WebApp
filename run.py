@@ -1,13 +1,18 @@
-from WebApp import app 
+from WebApp import create_app
+
+app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 
 # import os
 # os.getcwd()
 # os.chdir('C:\\Users\\User\\Documents\\Python Scripts\\Web')
 # 
-# from WebApp import db, app
+# from WebApp import db, create_app
+# app = create_app()
 # app.app_context().push()
 # from WebApp.models import User, Role, Farmland, Crop, Historical
 # db.create_all()

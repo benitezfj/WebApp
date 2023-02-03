@@ -1,5 +1,5 @@
-from flask import render_template, url_for, flash, redirect, request
-from WebApp import app, db, bcrypt
+from flask import render_template, url_for, flash, redirect, request, Blueprint
+from WebApp import db, bcrypt
 from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm, HistoricalForm, FertilizarMapForm
 from WebApp.models import User, Role, Farmland, Crop, Historical
 from flask_login import login_user, current_user, logout_user, login_required
@@ -8,11 +8,14 @@ import numpy as np
 import datetime as dt
 from earthengine.methods import get_image_collection_asset, get_fertilizer_map
 
-# import json
-
 import ee
-
 ee.Initialize()
+# from WebApp.config import Config
+# EE_CREDENTIALS = ee.ServiceAccountCredentials(config.EE_ACCOUNT, config.EE_PRIVATE_KEY_FILE)
+# ee.Initialize(EE_CREDENTIALS)
+
+main = Blueprint('main', __name__)
+
 
 posts = [
     {
@@ -23,14 +26,13 @@ posts = [
     }
 ]
 
-
-@app.route("/")
-@app.route("/home")
+@main.route("/")
+@main.route("/home")
 def home():
      return render_template('home.html', posts=posts)
 
 
-@app.route("/maps", methods=['GET','POST'])
+@main.route("/maps", methods=['GET','POST'])
 @login_required
 def maps():
     form = MapForm()
@@ -52,13 +54,13 @@ def maps():
         lon             = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
         lat             = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
         
-        map_url, index_name = get_image_collection_asset(platform='sentinel', 
-                                             sensor='2', 
-                                             product='BOA', 
-                                             cloudy = coverage, 
-                                             date_to = index_date, 
-                                             roi = roi, 
-                                             index = index)
+        map_url, index_name, end_date = get_image_collection_asset(platform='sentinel', 
+                                                                 sensor='2', 
+                                                                 product='BOA', 
+                                                                 cloudy = coverage, 
+                                                                 date_to = index_date, 
+                                                                 roi = roi, 
+                                                                 index = index)
         # print(map_url)
         # print(index_name)
         # Map.add_to(figure)
@@ -70,7 +72,7 @@ def maps():
                     'longitude': lon,
                     'farmland_name': farmland_name,
                     'index_name': index_name,
-                    'indexdate': index_date,
+                    'indexdate': end_date,
                     'cover': coverage}    
         
         # map_json = json.dumps(map_json)
@@ -84,7 +86,7 @@ def maps():
 
 
 
-@app.route("/fertilizer", methods=['GET','POST'])
+@main.route("/fertilizer", methods=['GET','POST'])
 @login_required
 def fertilizer_maps():
     form = FertilizarMapForm()
@@ -136,7 +138,7 @@ def fertilizer_maps():
 
 
 
-@app.route("/historic", methods=['GET','POST'])
+@main.route("/historic", methods=['GET','POST'])
 @login_required
 def historical():
     form = HistoricalForm()
@@ -179,11 +181,11 @@ def historical():
         db.session.add(pos)
         db.session.commit()
         flash('A historical farmland was assigned to a current one.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('historical.html', title='Historical', form=form, historics=historic_table)
 
 
-@app.route("/farmland", methods=['GET', 'POST'])
+@main.route("/farmland", methods=['GET', 'POST'])
 @login_required
 def insert_farmland_data():
     form = InsertFarmlandForm()
@@ -208,27 +210,27 @@ def insert_farmland_data():
         db.session.add(crop)
         db.session.commit()
         flash('A New Crop Field has been Registered', 'success')
-        # return redirect(url_for('insert_farmland_data'))
-        return redirect(url_for('login'))
+        # return redirect(url_for('main.insert_farmland_data'))
+        return redirect(url_for('main.login'))
     return render_template('crop.html', title='Insert a New Crop Field', form=form)
 
 
-@app.route("/list")
+@main.route("/list")
 @login_required
 def land_selection():
     lands = db.session.query(Farmland).join(Crop).add_columns(Farmland.id, Farmland.name, Crop.description, Farmland.sow_date, Farmland.harvest_date, Farmland.product_expected, Farmland.coordinates).filter(Farmland.croptype_id == Crop.id)
     return render_template('land_selection.html', title='Land', lands=lands)
 
 
-@app.route("/about")
+@main.route("/about")
 def about():
     return render_template('about.html', title='About')
 
 
-@app.route("/register", methods=['GET','POST'])
+@main.route("/register", methods=['GET','POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     form = RegistrationForm()
     pos = [(p.id, p.description) for p in Role.query.order_by(Role.description).all()]
     form.role.choices = pos
@@ -241,11 +243,11 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('You have successfully registered.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/role", methods=['GET','POST'])
+@main.route("/role", methods=['GET','POST'])
 @login_required
 def registerrole():
     form = RegistrationRoleForm()
@@ -254,11 +256,11 @@ def registerrole():
         db.session.add(pos)
         db.session.commit()
         flash('A new role has been registered', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('position.html', title='Role', form=form)
 
 
-@app.route("/crop", methods=['GET','POST'])
+@main.route("/crop", methods=['GET','POST'])
 @login_required
 def registercrop():
     form = RegistrationCropForm()
@@ -267,32 +269,32 @@ def registercrop():
         db.session.add(pos)
         db.session.commit()
         flash('A new crop type has been registered.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('croptype.html', title='Crop', form=form)
 
 
-@app.route("/login", methods=['GET','POST'])
+@main.route("/login", methods=['GET','POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember = form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
-@app.route("/logout")
+@main.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
-@app.route("/account")
+@main.route("/account")
 @login_required
 def account():
     return render_template('account.html', title='Account')

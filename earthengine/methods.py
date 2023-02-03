@@ -105,7 +105,7 @@ def image_to_map_id(image_name, vis_params={}):
   except EEException as e:
      logging.error('An error occurred while attempting to retrieve the map id.', e)
 
-def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from=None, date_to=None, roi=None, index=None, reducer='median'):
+def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from=None, date_to=None, roi=None, index=None, reducer='first'):
     """
     Get tile url for image collection asset.
     """
@@ -139,33 +139,68 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
         if roi:
             ee_collection = ee_collection.filterBounds(roi)
             ee_collection = ee_collection.map(lambda image: image.clip(roi))
-            
-        if index == 1:
-            ee_collection = ee_collection.map(addDate).map(getNDVI)
-            index = "NDVI"
-        elif index == 2:
-            ee_collection = ee_collection.map(addDate).map(getGNDVI)
-            index = "GNDVI"
-        elif index == 3:
-            ee_collection = ee_collection.map(addDate).map(getNDSI)
-            index = "NDSI"
-        elif index == 4:
-            ee_collection = ee_collection.map(addDate).map(getReCl)
-            index = "ReCl"
-        elif index == 5:
-            ee_collection = ee_collection.map(addDate).map(getNDWI)
-            index = "NDWI"
-        else: 
-            ee_collection = ee_collection.map(addDate).map(getNDVI).map(getNDWI)
-            ee_collection = ee_collection.map(getCWSI)
-            index = "CWSI"
-            
+        
         if cloudy:
             ee_collection = ee_collection.filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',cloudy))
-                    
-                
+        
         ee_collection = ee_collection.sort('system:time_start', False) 
-
+        
+        if reducer:
+            ee_collection = getattr(ee_collection, reducer)()
+            
+        
+        if index == 1:
+            if reducer=='first':
+                print(1)
+                ee_collection = addDate(ee_collection)
+                ee_collection = getNDVI(ee_collection)
+            else:
+                print(2)
+                ee_collection = ee_collection.map(addDate).map(getNDVI)
+            index = "NDVI"
+        elif index == 2:
+            if reducer=='first':
+                ee_collection = addDate(ee_collection)
+                ee_collection = getGNDVI(ee_collection)
+            else:
+                ee_collection = ee_collection.map(addDate).map(getGNDVI)
+            index = "GNDVI"
+        elif index == 3:
+            if reducer=='first':
+                ee_collection = addDate(ee_collection)
+                ee_collection = getNDSI(ee_collection)
+            else:
+                ee_collection = ee_collection.map(addDate).map(getNDSI)
+            index = "NDSI"
+        elif index == 4:
+            if reducer=='first':
+                ee_collection = addDate(ee_collection)
+                ee_collection = getReCl(ee_collection)
+            else:
+                ee_collection = ee_collection.map(addDate).map(getReCl)
+            index = "ReCl"
+        elif index == 5:
+            if reducer=='first':
+                ee_collection = addDate(ee_collection)
+                ee_collection = getNDWI(ee_collection)
+            else:
+                ee_collection = ee_collection.map(addDate).map(getNDWI)
+            index = "NDWI"
+        else: 
+            if reducer=='first':
+                ee_collection = addDate(ee_collection)
+                ee_collection = getNDVI(ee_collection)
+                ee_collection = getNDWI(ee_collection)
+                ee_collection = getCWSI(ee_collection)
+            else:
+                ee_collection = ee_collection.map(addDate).map(getNDVI).map(getNDWI)
+                ee_collection = ee_collection.map(getCWSI)
+            index = "CWSI"
+            
+        
+       
+        if reducer=='first':
+            date_to = ee_collection.date().format('YYYY-MM-dd').getInfo() 
         
         '''
         if cloud_mask:
@@ -173,12 +208,10 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
             if cloud_mask_func:
                 ee_collection = ee_collection.map(cloud_mask_func)
         '''
-        if reducer:
-            ee_collection = getattr(ee_collection, reducer)()
             
         tile_url = image_to_map_id(ee_collection.select(index), vis_params)
 
-        return tile_url, index
+        return tile_url, index, date_to
 
     except EEException as e:
         logging.error("The following exception occured", e)
@@ -252,10 +285,10 @@ def get_fertilizer_map(platform, sensor, product, cloudy=None, date_from=None, d
             ee_collection = posology_ndvi(ee_collection, posology_data)
             ee_collection = ee_collection.clip(roi)
         
-        print(ee_collection.date().format('YYYY-MM-dd').getInfo()) 
+        end_date = ee_collection.date().format('YYYY-MM-dd').getInfo() 
         tile_url = image_to_map_id(ee_collection.select('posology'), vis_params)
 
-        return tile_url, date_to
+        return tile_url, end_date
 
     except EEException as e:
         logging.error("The following exception occured", e)
