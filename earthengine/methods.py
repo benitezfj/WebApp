@@ -1,5 +1,5 @@
 from earthengine.products import EE_PRODUCTS
-# from earthengine.config import EE_ACCOUNT, EE_PRIVATE_KEY_FILE
+# from WebApp.config.Config import EE_ACCOUNT, EE_PRIVATE_KEY_FILE
 import logging
 import ee
 from ee.ee_exception import EEException

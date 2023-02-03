@@ -76,7 +76,7 @@ $ python run.py
 ```
 
 ## Note
-Keep in mind that to can use the Google Earth Engine (GEE), the user must gives 
+Keep in mind that in order to use the Google Earth Engine (GEE), users must give 
 access to GEE services to their Google account. After that, locally install 
 Google Cloud (gcloud) SDK and configure it, more information [here](https://cloud.google.com/sdk/docs/configurations?hl=es-419)
 and [here](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)
