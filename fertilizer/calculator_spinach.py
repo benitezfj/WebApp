@@ -34,7 +34,7 @@ def p2o5_p (p2o5):
 
 # from k_k2o import k_k2o
 # from p_p2o5 import p_p2o5
-
+# First one, the spinachFertilizer results are arguments of fertilizerCalculator
 def spinachFertilizer(rend): 
     '''
         This function returns a vector with the necessary micro and macro
@@ -85,5 +85,7 @@ def spinachFertilizer(rend):
     for i in range(0, len(result)):
         result[i] = result[i] * coef
     
-    return result
-    
+    # Return only Nitrogen, P2O5, K2O
+    return result[0], result[2], result[4] 
+
+# spinachFertilizer(production_expected)[0:3]

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from WebApp.models import User, Role, Crop
 import datetime
@@ -174,17 +174,8 @@ class HistoricalForm(FlaskForm):
 
 class FertilizarMapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
-    posology = FloatField("Posology", validators=[Optional()], default=1)
     submit = SubmitField('Calculate Fertilizer Map')
-    def validate_posology(self, posology):
-        try:
-            pos = float(posology.data)
-        except ValueError:
-            raise ValidationError("Invalid Posology Data.")
-        if pos <= 0:
-            raise ValidationError("Posology must be a Positive Value.")
-        if pos == "":
-            raise ValidationError("Posology can not be empty.")
+    
             
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):

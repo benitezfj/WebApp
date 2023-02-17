@@ -16,7 +16,6 @@
           left: 0.0%;
           top: 0.0%;
         }
-
     </style>
               
 {% endblock %}
@@ -32,11 +31,7 @@
             	<p class="form-control form-control-lg" type="text" id="farmland" disabled></p>
             </div>
             <div class="form-group">
-            	{{ form.posology.label(class="form-control-label") }}
-            	<p class="form-control form-control-lg" type="text" id="posology" disabled></p>
-            </div>
-            <div class="form-group">
-            	<label class="form-control-label">Posology Date</label>
+            	<label class="form-control-label">Fertilizer Map Date</label>
             	<p class="form-control form-control-lg" type="text" id="posology_date" disabled></p>
             </div>
             <div class="form-group">
@@ -54,7 +49,7 @@
             var maps_config = JSON.parse('{{ maps|tojson|safe }}');
             
             var Map = L.map("Map");
-            
+
             var tile_layer_openstreetmap = L.tileLayer(
             	"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 30, "maxZoom": 30, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
@@ -86,11 +81,15 @@
                     "tms": false}
             ).addTo(Map);
             
-            var gee_layer = L.tileLayer(maps_config.map_url, { attribution: '&copy; <a href="https://www.earthengine.google.com/copyright">Google Earth Engine</a>'}).addTo(Map);
+            var gee_layer = L.tileLayer(
+            	maps_config.map_url, { 
+                    attribution: '&copy; <a href="https://www.earthengine.google.com/copyright">Google Earth Engine</a>'}
+            ).addTo(Map);
             
             L.Control.geocoder({"collapsed": true, "defaultMarkGeocode": true, "position": "topleft"}).on('markgeocode', function(e) {
                             Map.setView(e.geocode.center, 11);
-                        }).addTo(Map);        
+            }).addTo(Map);        
+            
                 
             Map.fitBounds(
             	[[maps_config.latitude, maps_config.longitude], [maps_config.latitude, maps_config.longitude]],
@@ -132,6 +131,27 @@
             options.edit.featureGroup = drawnItems;
             var draw_control = new L.Control.Draw(options).addTo(Map);
             
+            
+            
+            
+            var legend = L.control({ position: "bottomleft" });
+            legend.onAdd = function(Map) {
+              var div = L.DomUtil.create("div", "legend");
+              div.innerHTML += "<h4>Fertilizers</h4>";
+              div.innerHTML += '<i style="background: #ff0000"></i><span>Water</span><br>';
+              div.innerHTML += '<i style="background: #fff400"></i><span>Forest</span><br>';
+              div.innerHTML += '<i style="background: #2cba00"></i><span>Land</span><br>';
+           /* div.innerHTML += '<i style="background: #E8E6E0"></i><span>Residential</span><br>'; */
+           /* div.innerHTML += '<i style="background: #FFFFFF"></i><span>Ice</span><br>'; */
+           /* div.innerHTML += '<i class="icon" style="background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/194515-200.png);background-repeat: no-repeat;"></i><span>Grænse</span><br>'; */
+            
+              return div;
+            };
+            legend.addTo(Map);
+
+            
+            
+            
             Map.on(L.Draw.Event.CREATED, function(e) {
                             		var layer = e.layer,
                                 		    type = e.layerType;
@@ -147,7 +167,6 @@
             });
             
             document.getElementById('farmland').innerText = maps_config.farmland_name;
-            document.getElementById('posology').innerText = maps_config.posology_value;
             document.getElementById('posology_date').innerText = maps_config.posologydate;
             document.getElementById('cloud_cover').innerText = maps_config.cover;
  

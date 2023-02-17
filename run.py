@@ -59,7 +59,7 @@ if __name__ == '__main__':
 # db.session.add(cropfiel_1)
 # db.session.commit()
 # Farmland.query.all()
-
+# Farmland.query.filter_by(id=1).first()
 
 # db.drop_all()
 # db.create_all()

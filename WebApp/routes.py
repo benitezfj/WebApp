@@ -1,14 +1,18 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy.orm import aliased
 from WebApp import db, bcrypt
 from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm, HistoricalForm, FertilizarMapForm
 from WebApp.models import User, Role, Farmland, Crop, Historical
-from flask_login import login_user, current_user, logout_user, login_required
-from sqlalchemy.orm import aliased
-import numpy as np
-import datetime as dt
+from fertilizer.calculator_spinach import spinachFertilizer
+from fertilizer.fertilizerCalculator import fertilizerCalculator
 from earthengine.methods import get_image_collection_asset, get_fertilizer_map
 
+import numpy as np
+import datetime as dt
 import ee
+
+# earthengine authenticate
 ee.Initialize()
 # from WebApp.config import Config
 # EE_CREDENTIALS = ee.ServiceAccountCredentials(config.EE_ACCOUNT, config.EE_PRIVATE_KEY_FILE)
@@ -94,24 +98,28 @@ def fertilizer_maps():
     
     if form.validate_on_submit(): 
         farm_id         = form.farmland.data
-        posology        = form.posology.data
+        
         coverage        = 60
-
-        # posology_date
         lands           = Farmland.query.get_or_404(farm_id)
         farmland_name   = lands.name
         coord           = np.array(lands.coordinates.split(','))
+        production_exp  = lands.product_expected
         
         roi             = ee.Geometry.Polygon([float(i) for i in coord])
         lon             = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
         lat             = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
 
+        nitrogen, potassium, phosphorus = spinachFertilizer(production_exp)
+        
+        print(nitrogen, potassium, phosphorus)
+        
+        print(fertilizerCalculator(n=nitrogen, p=potassium, k=phosphorus, db=2))
+        
         map_url, end_date = get_fertilizer_map(platform='sentinel', 
                                      sensor='2', 
                                      product='BOA', 
                                      cloudy = coverage, 
                                      roi = roi, 
-                                     posology_data = posology,
                                      reducer = 'first')
         print(map_url)
 
@@ -119,7 +127,6 @@ def fertilizer_maps():
                     'latitude': lat, 
                     'longitude': lon,
                     'farmland_name': farmland_name,
-                    'posology_value': posology,
                     'posologydate': end_date,
                     'cover': coverage}    
         
@@ -193,13 +200,18 @@ def insert_farmland_data():
     form.croptype.choices = crops
     if form.validate_on_submit(): 
         request_data = request.get_json()
-        descrip = request_data['name']
-        coord = request_data['coordinates'].replace("[","").replace("]","").replace("\n","").replace(" ","")
-        crop = int(request_data['croptype'])
-        sow = dt.datetime.strptime(request_data['sowdate'], '%Y-%m-%d').date()
-        harvest = dt.datetime.strptime(request_data['harvestdate'], '%Y-%m-%d').date()
-        product = float(request_data['productexpected'])
-        
+        # descrip = request_data['name']
+        descrip = request_data.get('name')
+        # coord = request_data['coordinates'].replace("[","").replace("]","").replace("\n","").replace(" ","")
+        coord = request_data.get('coordinates').replace("[","").replace("]","").replace("\n","").replace(" ","")
+        # crop = int(request_data['croptype'])
+        crop = int(request_data.get('croptype'))
+        # sow = dt.datetime.strptime(request_data['sowdate'], '%Y-%m-%d').date()
+        sow = dt.datetime.strptime(request_data.get('sowdate'), '%Y-%m-%d').date()
+        # harvest = dt.datetime.strptime(request_data['harvestdate'], '%Y-%m-%d').date()
+        harvest = dt.datetime.strptime(request_data.get('harvestdate'), '%Y-%m-%d').date()
+        # product = float(request_data['productexpected'])
+        product = float(request_data.get('productexpected'))
         crop = Farmland(name = descrip,
                        croptype_id = crop,
                        sow_date = sow,
@@ -211,7 +223,7 @@ def insert_farmland_data():
         db.session.commit()
         flash('A New Crop Field has been Registered', 'success')
         # return redirect(url_for('main.insert_farmland_data'))
-        return redirect(url_for('main.login'))
+        return redirect(url_for('main.home'))
     return render_template('crop.html', title='Insert a New Crop Field', form=form)
 
 

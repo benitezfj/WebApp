@@ -81,11 +81,10 @@ def getCWSI(image):
 
 #     return(image)
 
-def posology_ndvi(image, fos):
-    result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('posology')
-    image = image.addBands(result)
-    return(image)
-    
+# def posology_ndvi(image, fos):
+#     result = image.expression('b(24) >= 0.9 ? (fos * 0.7) : (b(24) >= 0.7 ? (fos * 1) : (fos * 1.1))', {'fos': fos}).rename('posology')
+#     image = image.addBands(result)
+#     return(image)
     
 # def calculo_ndvi(image):
 #     var result = image.expression(
@@ -95,6 +94,12 @@ def posology_ndvi(image, fos):
 #           'mean': ee.Number(meanV.get('b7')),
 #           'lT': lT
 #           });
+
+def fertilizer_ndvi(image):
+    # result = image.expression('b(24) >= 0.9 ? (NDVI * 0.7) : (b(24) >= 0.7 ? (NDVI * 1) : (NDVI * 1.1))', {'NDVI': image.select('NDVI')}).rename('fertilizer')
+    result = image.expression('b(24) >= 0.9 ? (0.7) : (b(24) >= 0.7 ? (1) : (1.1))', {'NDVI': image.select('NDVI')}).rename('fertilizer')
+    image = image.addBands(result)
+    return(image)
 
 def image_to_map_id(image_name, vis_params={}):
   try:
@@ -245,8 +250,9 @@ def get_fertilizer_map(platform, sensor, product, cloudy=None, date_from=None, d
     ee_product = EE_PRODUCTS[platform][sensor][product]
 
     collection = ee_product['collection']
-    vis_params = ee_product['vis_index']
-    vis_params.update({'min': posology_data*1.1, 'max': posology_data*0.7})
+    vis_params = ee_product['vis_fertilizer']
+    # vis_params.update({'min': posology_data*1.1, 'max': posology_data*0.7})
+    # vis_params.update({'min': 1.1, 'max': 0.7})
     try:
         ee_collection = ee.ImageCollection(collection)
         
@@ -272,21 +278,21 @@ def get_fertilizer_map(platform, sensor, product, cloudy=None, date_from=None, d
         ee_collection = ee_collection.sort('system:time_start', False)
 
         if reducer:
-            ee_collection = getattr(ee_collection, reducer)()
+            ee_image = getattr(ee_collection, reducer)()
 
         # Posology Index added when require add more.
-        if posology is None:
-           posology = 1;
+        # if posology is None:
+        #    posology = 1;
 
-        if posology == 1:
+        # if posology == 1:
             # Posology is calculated only for one image, through map function is not necessary
-            ee_collection = addDate(ee_collection)
-            ee_collection = getNDVI(ee_collection)
-            ee_collection = posology_ndvi(ee_collection, posology_data)
-            ee_collection = ee_collection.clip(roi)
+        ee_image = addDate(ee_image)
+        ee_image = getNDVI(ee_image)
+        ee_image = fertilizer_ndvi(ee_image)
+        ee_image = ee_image.clip(roi)
         
-        end_date = ee_collection.date().format('YYYY-MM-dd').getInfo() 
-        tile_url = image_to_map_id(ee_collection.select('posology'), vis_params)
+        end_date = ee_image.date().format('YYYY-MM-dd').getInfo() 
+        tile_url = image_to_map_id(ee_image.select('fertilizer'), vis_params)
 
         return tile_url, end_date
 

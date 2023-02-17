@@ -145,3 +145,35 @@ div .row{
   z-index: 99; /* Specify a stack order in case you're using a different order for other elements */
   cursor: pointer; /* Add a pointer on hover */
 }
+
+        
+        
+.legend {
+  padding: 8px 8px;
+  font: 14px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 1);
+  line-height: 24px;
+  color: #000000;
+}
+
+.legend h4 {
+  text-align: center;
+  font-size: 20px;
+  margin: 5px 15px 15px;
+  color: #000000;
+}
+
+.legend span {
+  position: relative;
+  bottom: 5px;
+}
+
+.legend i {
+  width: 20px;
+  height: 20px;
+  float: right;
+  margin: 0 15px 0 15px;
+  opacity: 1;
+}
+        

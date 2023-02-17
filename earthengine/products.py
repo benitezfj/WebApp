@@ -121,6 +121,14 @@ EE_PRODUCTS = {
                           '#1a9850'
                        ]
                 },
+                'vis_fertilizer': {'min': 1.1, 
+                                   'max': 0.7,
+                                   'palette': [
+                                        '#ff0000',
+                                        '#fff400',
+                                        '#2cba00'
+                                   ]
+                },
                 'start_date': '2015-06-23',
                 'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present
             },
@@ -147,6 +155,14 @@ EE_PRODUCTS = {
                           '#66bd63',
                           '#1a9850'
                     ]
+                },
+                'vis_fertilizer': {'min': 1.1, 
+                                   'max': 0.7,
+                                   'palette': [
+                                        '#ff0000',
+                                        '#fff400',
+                                        '#2cba00'
+                                   ]
                 },
                 'start_date': '2017-03-28',
                 'end_date': str(dt.datetime.today().strftime("%Y-%m-%d"))  # to present

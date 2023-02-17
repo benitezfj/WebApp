@@ -49,6 +49,13 @@
                         {{ form.productobtained(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                
+                <label for="historicos">¿Desea añadir datos históricos?</label>
+                <input type="radio" name="sel-historicos" id="si-historicos" onchange="javascript:showRadial('datos-historicos','si-historicos')">Sí
+                <input type="radio" name="sel-historicos" id="no-historicos" onchange="javascript:showRadial('datos-historicos','si-historicos')">No
+                <div id="datos-historicos" style="display:none;">
+                    <input type="text" id="datos-historicos" placeholder="Introduzca toda la información adicional disponible">
+                </div>
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
@@ -104,5 +111,15 @@
           null],
       });
     });
+    
+    function showRadial(elementId, checkId){
+                element = document.getElementById(elementId);
+                check = document.getElementById(checkId);
+                if(check.checked){
+                    element.style.display = "block";
+                }else{
+                    element.style.display = "none";
+                }
+            }
   </script>
 {% endblock %}
