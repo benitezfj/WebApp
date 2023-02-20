@@ -1,4 +1,4 @@
-function calculateBlend_v3(my_n, my_p, my_k, my_db)  
+function [result, diff] = calculateBlend_v4(my_n, my_p, my_k, my_db)  
 
     %Calculates optimal blend of fertilizers
 
@@ -15,27 +15,25 @@ function calculateBlend_v3(my_n, my_p, my_k, my_db)
                 1 -> Fertiberia (Spain)
                 2 -> Bunge (Paraguay)
 
-    The function returns a string specifying the best fertilization blend 
-    for obtaining the desired nutrient values. The output has the following 
-    format:
-
-        x kg/ha of N- P- K-
-
-    The output can combine from 0 to 3 different fertilizers.
-
-    The program also prints on screen the resulted blend, the difference
-    between the output blend and the ideal fertilization blend, and the
-    elapsed time:
-
-        x kg/ha of N1- P1- K1-
-        y kg/ha of N2- P2- K2-
-        z kg/ha of N3- P3- K3-
-        Difference from desired blend: (N4) - (P4) - (K4) -
-        Elapsed time is s seconds.
+    The function returns two matrices. The first one specifies the best 
+    fertilization blend for obtaining the desired nutrient values. The 
+    second one indicates the difference between the output blend and the 
+    ideal fertilization blend. The output can combine from 0 to 3 different 
+    fertilizers. Thus, the output of the first matrix can be in any of the 
+    following formats:
+        - 0 fertilizers: []
+        - 1 fertilizer: [Q1 N1 P1 K1]
+        - 2 fertilizers: [Q1 N1 P1 K1; Q2 N2 P2 K2]
+        - 3 fertilizers: [Q1 N1 P1 K1; Q2 N2 P2 K2; Q3 N3 P3 K3]
+    
+    The output format of the second matrix is:
+        [Nd Pd Kd]
+    
+    Where Qn is the quantity of the fertilizer Nn, Pn and Kn are the N-P- K 
+    values of the fertilizers, and Nd, Pd and Kd are the N-P-K differences
+    between the desired blend and the obtained blend.
 
     %}
-    
-    tic; %Start measuring execution time
 
     %% Obtain fertilizer types and desired quantity
     
@@ -103,6 +101,8 @@ function calculateBlend_v3(my_n, my_p, my_k, my_db)
     
     %% Print the best solution
 
+    result = [];
+    k = 1;
     switch i
         %Case 1 - Jacobi method found the best solution
         %Case 2 - Gauss-Seidel method found the best solution
@@ -113,13 +113,18 @@ function calculateBlend_v3(my_n, my_p, my_k, my_db)
             
             for j = 1:length(x_J(:,i_J(1)))
                 if x_J(j,i_J(1)) ~= 0
-                    fprintf('\n%f kg/ha of ', x_J(j,i_J(1)));
-                    fprintf(' %d-', A(:, F(j))*100);
+                    q = x_J(j, i_J(1)); %Quantity of fertilizer
+                    m = A(:, F(j))*100; %N-P-K from fertilizer
+                    result(:, k) = vertcat(q, m);
+                    k = k + 1;
                 end
             end
-            
-            fprintf('\nDifference from desired blend: ');
-            fprintf('(%f) - ', diff_vec_J(i_J(1), :));
+
+            result = result.'; %Transpose result matrix
+
+            %Difference between the desired blend and the one obtained
+            diff = diff_vec_GS(i_GS(1), :);
+           
 
         case 2
             
@@ -127,17 +132,18 @@ function calculateBlend_v3(my_n, my_p, my_k, my_db)
 
             for j = 1:length(x_GS(:, i_GS(1)))
                 if x_GS(j, i_GS(1)) ~= 0
-                    fprintf('\n%f kg/ha of', x_GS(j, i_GS(1)));
-                    fprintf(' %d-', A(:, F(j))*100);
+                    q = x_GS(j, i_GS(1)); %Quantity of fertilizer
+                    m = A(:, F(j))*100; %N-P-K from fertilizer
+                    result(:, k) = vertcat(q, m);
+                    k = k + 1;
                 end
                 
             end
+            
+            result = result.'; %Transpose result matrix
 
-            %frpintf('\nDifference from desired blend: ');
-            fprintf('(%f) - ', diff_vec_GS(i_GS(1), :));
+            %Difference between the desired blend and the one obtained
+            diff = diff_vec_GS(i_GS(1), :);
 
     end
-    
-    fprintf('\n');
-    toc; %End measuring execution time
 end

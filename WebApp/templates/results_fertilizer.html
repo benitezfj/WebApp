@@ -35,13 +35,96 @@
             	<p class="form-control form-control-lg" type="text" id="posology_date" disabled></p>
             </div>
             <div class="form-group">
-            	<label class="form-control-label">Cloud Coverage (%)</label>
-            	<p class="form-control form-control-lg" type="text" id="cloud_cover" disabled></p>
+            	<label class="form-control-label">Expected Crop Productivity</label>
+            	<p class="form-control form-control-lg" type="text" id="production_exp" disabled></p>
             </div>
             
             <div class="form-group">   
                 <div class="folium-map" id="Map" ></div>
             </div>
+            
+            <div class="row">
+                <div class="column">            
+                    <table>
+                      <thead>
+                        <tr>
+                            <th>Expected Crop Productivity</th>
+                            <th>NPK Commercial</th>
+                            <th>Posology (Kg/ha)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                          
+                            <td rowspan="3">{{fertilizer_measure[0]}} Tones per ha</td>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][0]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][1]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][2]}}</td>
+                          </tr>
+                      </tbody>
+                    </table>
+                </div>
+                <div class="column">
+                    <table>
+                      <tr>
+                        <th>Nutrients</th>
+                        <th>Kg/ha yield of {{fertilizer_measure[0]}} tn/ha</th>
+                      </tr>
+                      <tr>
+                        <td>N</td>
+                        <td>{{nutrient[0]}}</td>
+                      </tr>
+                      <tr>
+                        <td>P</td>
+                        <td>{{nutrient[1]}}</td>
+                      </tr>
+                      <tr>
+                        <td>K</td>
+                        <td>{{nutrient[2]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Ca</td>
+                        <td>{{nutrient[3]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Mg</td>
+                        <td>{{nutrient[4]}}</td>
+                      </tr>
+                      <tr>
+                        <td>S</td>
+                        <td>{{nutrient[5]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Cu</td>
+                        <td>{{nutrient[6]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Mn</td>
+                        <td>{{nutrient[7]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Fe</td>
+                        <td>{{nutrient[8]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Zn</td>
+                        <td>{{nutrient[9]}}</td>
+                      </tr>
+                      <tr>
+                        <td>B</td>
+                        <td>{{nutrient[10]}}</td>
+                      </tr>
+                    </table>
+                </div>
+            </div>
+            
             
         </fieldset>    
         <script>
@@ -138,9 +221,9 @@
             legend.onAdd = function(Map) {
               var div = L.DomUtil.create("div", "legend");
               div.innerHTML += "<h4>Fertilizers</h4>";
-              div.innerHTML += '<i style="background: #ff0000"></i><span>Water</span><br>';
-              div.innerHTML += '<i style="background: #fff400"></i><span>Forest</span><br>';
-              div.innerHTML += '<i style="background: #2cba00"></i><span>Land</span><br>';
+              div.innerHTML += '<i style="background: #ff0000"></i><span>High</span><br>';
+              div.innerHTML += '<i style="background: #fff400"></i><span>Medium</span><br>';
+              div.innerHTML += '<i style="background: #2cba00"></i><span>Low</span><br>';
            /* div.innerHTML += '<i style="background: #E8E6E0"></i><span>Residential</span><br>'; */
            /* div.innerHTML += '<i style="background: #FFFFFF"></i><span>Ice</span><br>'; */
            /* div.innerHTML += '<i class="icon" style="background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/194515-200.png);background-repeat: no-repeat;"></i><span>Grænse</span><br>'; */
@@ -168,7 +251,7 @@
             
             document.getElementById('farmland').innerText = maps_config.farmland_name;
             document.getElementById('posology_date').innerText = maps_config.posologydate;
-            document.getElementById('cloud_cover').innerText = maps_config.cover;
+            document.getElementById('production_exp').innerText = maps_config.production_exp;
  
             
         </script>

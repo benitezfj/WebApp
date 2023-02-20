@@ -17,11 +17,7 @@ wtforms
         
     
 '''
-# crop = [(1, 'Soja'), (2, 'Maíz'), (3, 'Trigo'), (4, 'Oliva'), (5, 'Arroz'), (6, 'Fruta'), (7, 'Raíces y Tubérculos'), (8, 'Vegetales'), (9, 'Azúcar')]
-       
 
-# ('Position', query_factory=position_query, allow_blank=False, get_pk=lambda a: a.id)
-# Formulacion usado para registrar un usuario
 class RegistrationForm(FlaskForm):
     username = StringField('Username', 
                           validators=[DataRequired(), Length(min=2, max=20)])
@@ -45,7 +41,6 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('That email is taken. Please choose a different one.')
     
    
-# Formulacion usado para registrar un usuario
 class RegistrationRoleForm(FlaskForm):
     description = StringField('Role', 
                               validators=[DataRequired(), Length(min=2, max=20)])
@@ -55,6 +50,7 @@ class RegistrationRoleForm(FlaskForm):
         role_data = Role.query.filter_by(description=description.data).first()
         if role_data:
             raise ValidationError('That role is already created.')
+
             
 class RegistrationCropForm(FlaskForm):
     description = StringField('Crop', 
@@ -65,6 +61,7 @@ class RegistrationCropForm(FlaskForm):
         crop_data = Crop.query.filter_by(description=description.data).first()
         if crop_data:
             raise ValidationError('That crop is already created.')
+
         
 class LoginForm(FlaskForm):
     username = StringField('Username', 
@@ -80,6 +77,7 @@ class MapForm(FlaskForm):
     indices = SelectField('Index to Calculate', coerce=int, choices=[(1, 'NDVI'), (2, 'GNDVI'), (3, 'NDSI'), (4, 'RECL'), (5, 'NDWI'), (6, 'CWSI')])
     index_date = DateField('Index Date', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Find Location')
+    
     def validate_dates(self, index_date):
         try:
             indexdate = datetime.date(index_date.data)
@@ -92,39 +90,7 @@ class MapForm(FlaskForm):
         if (indexdate > today_date):
             raise ValidationError("The Index Date can not be later the Current Date.")
             
-    # cloud_cover =  FloatField("Cloud Coverage (%)", validators=[Optional()], default=60)    
-    # start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
-    # coordinates = StringField('Coordinates', validators=[DataRequired()])
-    # reducer = SelectField('Reducer', coerce=int, choices=[('1', 'Moderator'), ('2', 'Janitor')])
-    # latitude = FloatField('Latitude', validators=[DataRequired()])           
-    # longitude  = FloatField('Longitude', validators=[DataRequired()])    
-    # def validate_cloud_cover(self, cloud_cover):
-    #     try:
-    #         cloud = float(cloud_cover.data)
-    #     except ValueError:
-    #         raise ValidationError("Invalid Expected Harvest Data.")
-    #     if cloud != 60:
-    #         raise ValidationError("Cloud Coverage must be a equal to 60%")
-    #     if cloud > 100:
-    #         raise ValidationError("Cloud Coverage cannot be greater than 100%")
-    #     if cloud < 10:
-    #         raise ValidationError("Cloud Coverage cannot be less than 10%")
-    #     if cloud == "":
-    #         raise ValidationError("Cloud Coverage cannot be empty.")
 
-
-
-# ----------- New
-# class IndexForm(FlaskForm):
-#     latitude_1 = FloatField('Latitude 1', validators=[DataRequired()])
-#     longitude_1  = FloatField('Longitude 1', validators=[DataRequired()])
-#     latitude_2 = FloatField('Latitude 2', validators=[DataRequired()])
-#     longitude_2  = FloatField('Longitude 2', validators=[DataRequired()])
-#     submit = SubmitField('Find Index')
-# -----------     
-    
-# ----------------------------Ingreso de Datos
-# ----------------------------Cabecera
 class InsertFarmlandForm(FlaskForm):
     name = StringField('Farmland Description', 
                               validators=[DataRequired(), Length(min=2, max=50)])
@@ -176,7 +142,10 @@ class FertilizarMapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
     submit = SubmitField('Calculate Fertilizer Map')
     
-            
+      
+
+
+      
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):
     fertilizartype = SelectMultipleField('FertilizerType', coerce=int)

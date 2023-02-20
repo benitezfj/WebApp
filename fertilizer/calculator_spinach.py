@@ -86,6 +86,7 @@ def spinachFertilizer(rend):
         result[i] = result[i] * coef
     
     # Return only Nitrogen, P2O5, K2O
-    return result[0], result[2], result[4] 
+    # return result[0], result[2], result[4] 
+    return result
 
 # spinachFertilizer(production_expected)[0:3]

@@ -109,11 +109,55 @@ def fertilizer_maps():
         lon             = ee.Number(roi.centroid().coordinates().get(0)).getInfo();
         lat             = ee.Number(roi.centroid().coordinates().get(1)).getInfo();
 
-        nitrogen, potassium, phosphorus = spinachFertilizer(production_exp)
+        nutrients = spinachFertilizer(production_exp)
+        nitrogen, potassium, phosphorus = nutrients[0:3]
         
-        print(nitrogen, potassium, phosphorus)
+        fertilizer_measure, diff_blend = fertilizerCalculator(n=nitrogen, p=potassium, k=phosphorus, db=2)
+
+        fertilizer_measure = np.array(fertilizer_measure)
+        diff_blend = np.array(diff_blend)[0]
         
-        print(fertilizerCalculator(n=nitrogen, p=potassium, k=phosphorus, db=2))
+        # for index, value in np.ndenumerate(fertilizer_measure):
+        #     if index[1] == 0:
+        #         if fertilizer_measure[index] >= 0.9:
+        #             fertilizer_measure[index] = fertilizer_measure[index] * 0.9
+        #         elif fertilizer_measure[index] >= 0.7:
+        #             fertilizer_measure[index] = fertilizer_measure[index] * 1
+        #         else: 
+        #             fertilizer_measure[index] = fertilizer_measure[index] * 1.1
+
+        # Extract amount of fertilizer kg/ha
+        amount_fertilizer = []
+        for index, value in np.ndenumerate(fertilizer_measure):
+                    if index[1] == 0:
+                        amount_fertilizer.append(value)
+        # NPK Commercial
+        type_fertilizer = np.delete(fertilizer_measure, 0, axis=1).astype(int)
+        
+        fertilizer = []
+        fertilizer.append(production_exp)
+        # fertilizer.append(fertilizer_measure)
+        fertilizer.append(amount_fertilizer)
+        fertilizer.append(type_fertilizer)
+        fertilizer.append(diff_blend)
+        print(fertilizer)
+        
+        # print(nitrogen, potassium, phosphorus)
+        # print(a)
+        # print(b)
+        # for i in range(len(a)):
+        #     print(f'{a[i][0]}', 'kg/ha of', f'{a[i][1]}- {a[i][2]}- {a[i][3]}-')
+   
+            
+        # print('\nDifference from desired blend:', f'{b[0]}-, {b[1]}-, {b[2]}-')
+            
+        # input_1 = input('Please enter first floating point value:\n')
+        # input_1 = float(input_1)
+        
+        # input_2 = input('Please enter second floating point value:\n')
+        # input_2 = float(input_2)
+        
+        # print(f'Sum of {input_1} and {input_2} is {input_1+input_2}')
         
         map_url, end_date = get_fertilizer_map(platform='sentinel', 
                                      sensor='2', 
@@ -128,11 +172,12 @@ def fertilizer_maps():
                     'longitude': lon,
                     'farmland_name': farmland_name,
                     'posologydate': end_date,
-                    'cover': coverage}    
+                    'production_exp': production_exp}
+                    # 'cover': coverage}    
         
         print(map_json)
-        
-        return render_template('results_fertilizer.html', title='Maps', maps=map_json, form=form)
+        print(f'{nutrients[0]} kg/ha of {nutrients[1]}- {nutrients[2]}- {nutrients[3]}-')
+        return render_template('results_fertilizer.html', title='Maps', maps=map_json, form=form, nutrient=nutrients, fertilizer_measure = fertilizer)
     return render_template('input_fertilizer.html', title='Maps', form=form)
 
 
