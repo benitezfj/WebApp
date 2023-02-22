@@ -2,8 +2,8 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.orm import aliased
 from WebApp import db, bcrypt
-from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm, HistoricalForm, FertilizarMapForm
-from WebApp.models import User, Role, Farmland, Crop, Historical
+from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, InsertFarmlandForm, RegistrationCropForm, HistoricalForm, FertilizarMapForm, InsertHistoricalForm
+from WebApp.models import User, Role, Farmland, Crop, Historical, HistoricFarmland
 from fertilizer.calculator_spinach import spinachFertilizer
 from fertilizer.fertilizerCalculator import fertilizerCalculator
 from earthengine.methods import get_image_collection_asset, get_fertilizer_map
@@ -33,7 +33,9 @@ posts = [
 @main.route("/")
 @main.route("/home")
 def home():
-     return render_template('home.html', posts=posts)
+    if not current_user.is_authenticated:
+        return redirect(url_for('main.login'))
+    return render_template('home.html', posts=posts)
 
 
 @main.route("/maps", methods=['GET','POST'])
@@ -131,6 +133,10 @@ def fertilizer_maps():
         for index, value in np.ndenumerate(fertilizer_measure):
                     if index[1] == 0:
                         amount_fertilizer.append(value)
+        
+        b = [0.7, 1, 1.1]
+        amount_fertilizer = np.outer(np.array(b), np.array(amount_fertilizer))
+
         # NPK Commercial
         type_fertilizer = np.delete(fertilizer_measure, 0, axis=1).astype(int)
         
@@ -194,11 +200,16 @@ def fertilizer_maps():
 @login_required
 def historical():
     form = HistoricalForm()
-    form.current_farm_id.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date > dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
-    form.historical_farm_id.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date <= dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
+    form.current_farm.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date > dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
+    form.historical_farm.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date <= dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
     
     Current_Farmland = aliased(Farmland)
     Historical_Farmland = aliased(Farmland)
+    
+    # current_table = db.session.query(Current_Farmland) \
+    #     .order_by(Current_Farmland.name) \
+    #     .filter(Current_Farmland.harvest_date > dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)) #.all()
+    
     
     # SQLAlchemy query for joining the historical tables with farmland
     historic_table = db.session.query(Historical, Historical_Farmland, Current_Farmland) \
@@ -223,18 +234,72 @@ def historical():
     #                     	a.product_expected as "current_production",
     #                     	b.product_expected as "historic_production" 
     #                     from historical as h 
-    #                     join farmlands as a on a.id = h.current_farm_id 
-    #                     join farmlands as b on b.id = h.historical_farm_id;
+    #                     join farmlands as a on a.id = h.current_farm 
+    #                     join farmlands as b on b.id = h.historical_farm;
     
     if form.validate_on_submit():
-        pos = Historical(current_farm_id = form.current_farm_id.data,
-                         historical_farm_id = form.historical_farm_id.data,
+        pos = Historical(current_farm_id = form.current_farm.data,
+                         historical_farm_id = form.historical_farm.data,
                          product_obtained = form.productobtained.data)
         db.session.add(pos)
         db.session.commit()
         flash('A historical farmland was assigned to a current one.', 'success')
         return redirect(url_for('main.login'))
     return render_template('historical.html', title='Historical', form=form, historics=historic_table)
+
+@main.route("/inserthistoric", methods=['GET','POST'])
+@login_required
+def insert_historical_data():
+    form = InsertHistoricalForm()
+    form.current_farm.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date > dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
+    form.croptype.choices = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
+    print(form.validate_on_submit())
+    if form.validate_on_submit():
+        current_farm    = Farmland.query.get_or_404(form.current_farm.data)
+        
+        print(form.current_farm.data, 
+              form.name.data, 
+              form.croptype.data, 
+              form.productobtained.data, 
+              form.sowdate.data, 
+              form.harvestdate.data,  
+              current_farm.product_expected, 
+              current_farm.coordinates)
+        
+        
+        # CurrentCrop = aliased(Crop)
+        # HistoricalCrop = aliased(Crop)
+        # historic_table = db.session.query(HistoricFarmland) \
+        # 	.join(Farmland, HistoricFarmland.current_farm_id == Farmland.id) \
+        # 	.join(CurrentCrop, HistoricFarmland.croptype_id == CurrentCrop.id) \
+        # 	.join(HistoricalCrop, HistoricFarmland.croptype_id == HistoricalCrop.id) \
+        # 	.add_columns(HistoricFarmland.name.label('historic_name'), 
+        # 		HistoricalCrop.description.label('last_crop'),
+        # 		HistoricFarmland.sow_date.label('current_seed_time'), 
+        # 		HistoricFarmland.harvest_date.label('last_harvest_date'), 
+        # 		HistoricFarmland.product_obtained.label('product_obtained'),
+        # 		Farmland.name.label('current_name'), 
+        # 		CurrentCrop.description.label('current_crop'), 
+        # 		Farmland.sow_date.label('current_seed_time'), 
+        # 		Farmland.harvest_date.label('next_harvest_date'), 
+        # 		Farmland.product_expected.label('current_production'), 
+        # 		Farmland.coordinates.label('coordinates')) #.all()
+        # 'Soja 2.2', 'Soja', datetime.date(2023, 2, 1), datetime.date(2022, 12, 31),   100.0, 'Soja 2', 'Soja', datetime.date(2023, 2, 1), datetime.date(2023, 3, 31), 100.0, '-55.04562,-25.45641,-55.044751,-25.456226,-55.044478,-25.457073,-55.045358,-25.457296,-55.04562,-25.45641'
+        hist = HistoricFarmland(current_farm_id  = form.current_farm.data,
+                                name             = form.name.data,
+                                product_obtained = form.productobtained.data,
+                                croptype_id      = form.croptype.data,
+                                sow_date         = form.sowdate.data,
+                                harvest_date     = form.harvestdate.data,
+                                product_expected = current_farm.product_expected,
+                                coordinates      = current_farm.coordinates)
+        
+        
+        db.session.add(hist)
+        db.session.commit()
+        flash('A historical farmland was assigned to a current one.', 'success')
+        return redirect(url_for('main.login'))
+    return render_template('historical_2.html', title='Historical', form=form)
 
 
 @main.route("/farmland", methods=['GET', 'POST'])
@@ -332,6 +397,7 @@ def registercrop():
 
 @main.route("/login", methods=['GET','POST'])
 def login():
+    # Redireccionaar a /list
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = LoginForm()

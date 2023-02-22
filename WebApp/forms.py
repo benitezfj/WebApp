@@ -97,7 +97,7 @@ class InsertFarmlandForm(FlaskForm):
     croptype = SelectField('Crop Type', coerce=int)
     sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
     harvestdate = DateField('Harvest', format='%Y-%m-%d', validators=[DataRequired()])
-    productexpected =  FloatField("Production Expected (tons)", validators=[Optional()], default=0)
+    productexpected =  FloatField("Production Expected (Kg/ha)", validators=[Optional()], default=0)
     coordinates = StringField('Coordinates', validators=[DataRequired()])
     submit = SubmitField('Register the Crop Field.')
     
@@ -122,9 +122,9 @@ class InsertFarmlandForm(FlaskForm):
             
             
 class HistoricalForm(FlaskForm):
-    current_farm_id = SelectField('Current Farmland', coerce=int)
-    historical_farm_id = SelectField('Historical Farmland', coerce=int)
-    productobtained = FloatField("Production Obtained (tons)", validators=[Optional()], default=0)
+    current_farm = SelectField('Current Farmland', coerce=int)
+    historical_farm = SelectField('Historical Farmland', coerce=int)
+    productobtained = FloatField("Production Obtained (Kg/ha)", validators=[Optional()], default=0)
     submit = SubmitField('Register the Historic Farmland.')
     
     def validate_production_obtained(self, productobtained):
@@ -141,34 +141,106 @@ class HistoricalForm(FlaskForm):
 class FertilizarMapForm(FlaskForm):
     farmland = SelectField('Farmland', coerce=int)
     submit = SubmitField('Calculate Fertilizer Map')
+        
     
-      
+class InsertHistoricalForm(FlaskForm):
+    current_farm = SelectField('Current Farmland', coerce=int)
+    name = StringField('Historic Farmland Description', 
+                       validators=[DataRequired(), Length(min=2, max=50)])
+    croptype = SelectField('Crop Type', coerce=int)
+    sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
+    harvestdate = DateField('Harvest Date', format='%Y-%m-%d', validators=[DataRequired()])
+    productobtained = FloatField("Production Obtained (Kg/ha)", validators=[Optional()], default=0)
+    
+    
+    fertilizartype = SelectMultipleField('Fertilizer Type', coerce=int, choices=[(1, ' ')])
+    posology = StringField("Posology N-P-K", validators=[Optional()])
+    
+    fungicidetreatmenttype = SelectMultipleField("Fungicide Treatment Type", coerce=int, choices=[(1, ' ')])
+    fungicidetreatmentdate = DateField('Fungicide Treatment Date', validators=[Optional()])
+    fungicideposology = StringField("Fungicide Posology N-P-K", validators=[Optional()])
+    fungicidetreatment = StringField("Fungicide Treatment Observation", validators=[Optional()])
+    
+    herbicidetreatmenttype = SelectMultipleField('Herbicide Treatment Type', coerce=int, choices=[(1, ' ')])
+    herbicidetreatmentdate = DateField("Herbicide Treatment Date", validators=[Optional()])
+    herbicideposology = StringField("Herbicide Posology N-P-K", validators=[Optional()])
+    herbicidetreatment = StringField('Herbicide Treatment', validators=[Optional()])
+    
+    pesticidetreatmenttype = SelectMultipleField('Pesticide Treatment Type', coerce=int, choices=[(1, ' ')])
+    pesticidetreatmentdate = DateField('Pesticide Treatment Date', validators=[Optional()])
+    pesticideposology = StringField("Pesticide Posology N-P-K", validators=[Optional()])
+    pesticidetreatment = StringField('Pesticide Treatment', validators=[Optional()])
+    
+    anothertreatmenttype = SelectMultipleField('Another Treatment Type', coerce=int, choices=[(1, ' ')])
+    anothertreatmentdate = DateField('Another Treatment Date', validators=[Optional()])
+    anotherposology = StringField("Another Posology N-P-K", validators=[Optional()])
+    anothertreatment = StringField('Another Treatment', validators=[Optional()])
+
+    diseasesabnormalities = StringField('Disease or Abnormality', validators=[Length(min=2, max=150)])
+    treatmentobservation = StringField('Observation', validators=[Length(min=2, max=150)])
+    
+    soilsampledate = DateField('Soil Sample Date', validators=[Optional()])
+    depth = FloatField('Depth', validators=[Optional()], default=0)
+    nitrogenlevel = FloatField('Nitrogen Level', validators=[Optional()], default=0)
+    organicmatterlevel = FloatField('Organic Matter Level', validators=[Optional()], default=0)
+    phosphoruslevel = FloatField('Phosphorus Level', validators=[Optional()], default=0)
+    potassiumlevel = FloatField('Potassium Level', validators=[Optional()], default=0)
+    soilmoisture = FloatField('Soil Moisture', validators=[Optional()], default=0)
+    
+    submit = SubmitField('Register the Historic Farmland.')
+    
+    def validate_production_obtained(self, productobtained):
+        try:
+            prod_obt = float(productobtained.data)
+        except ValueError:
+            raise ValidationError("Invalid Production Obtained Data.")
+        if prod_obt < 0:
+            raise ValidationError("The Production Obtained must be a Positive Value.")
+        if prod_obt == "":
+            raise ValidationError("The Production Obtained can not be empty.")
+    
+    def validate_harvest_date(self, harvestdate):
+        try:
+            harvest_date = datetime.date(harvestdate.data)
+        except ValueError:
+            raise ValidationError("Invalid Seedtime or Harvest Time.")
+        if harvest_date >= datetime.today().strftime('%Y-%m-%d'):
+            raise ValidationError("The Harvest Date must be a past date.")
+            
+    def validate_sow_date(self, sowdate, harvestdate):
+        try:
+            sow_date = datetime.date(sowdate.data)
+        except ValueError:
+            raise ValidationError("Invalid Seedtime or Harvest Time.")
+        if sow_date >= datetime.today().strftime('%Y-%m-%d'):
+            raise ValidationError("The Sow Date must be after the Seedtime.")
 
 
-      
+
+
 # ----------------------------Detalles
 class FertilizarForm(FlaskForm):
-    fertilizartype = SelectMultipleField('FertilizerType', coerce=int)
-    posology = StringField("Posology") #Agregar validadores
-    diseasesabnormalities = StringField('DiseaseOrAbnormality', validators=[Length(min=2, max=150)])
-    observation = StringField('Obs', validators=[Length(min=2, max=150)])
+    # fertilizartype = SelectMultipleField('FertilizerType', coerce=int)
+    # posology = StringField("Posology") #Agregar validadores
+    # diseasesabnormalities = StringField('DiseaseOrAbnormality', validators=[Length(min=2, max=150)])
+    # observation = StringField('Obs', validators=[Length(min=2, max=150)])
     submit = SubmitField('Register Fertilizer Data')
     
 class TreatmentForm(FlaskForm):
-    treatment = StringField('Treatment')
-    treatmenttype = SelectMultipleField('TreatmentType', coerce=int)
-    treatmentdate = DateField('TreatmentDate')
-    posology = StringField("Posology")
-    treatmentobservation = StringField('Obs', validators=[Length(min=2, max=150)])
+    # treatment = StringField('Treatment')
+    # treatmenttype = SelectMultipleField('TreatmentType', coerce=int)
+    # treatmentdate = DateField('TreatmentDate')
+    
+    # treatmentobservation = StringField('Obs', validators=[Length(min=2, max=150)])
     submit = SubmitField('Register Treatment Data')
     
 class SoilForm(FlaskForm):    
-    soilsampledate = DateField('TreatmentDate')
-    location = FloatField('Location')
-    depth = FloatField('Depth')
-    nitrogenlevel = FloatField('NitrogenLevel')
-    organicmatterlevel = FloatField('OrganicMatterLevel')
-    phosphoruslevel = FloatField('PhosphorusLevel')
-    potassiumlevel = FloatField('PotassiumLevel')
-    soilmoisture = FloatField('SoilMoisture')
+    # soilsampledate = DateField('TreatmentDate')
+    # location = FloatField('Location')
+    # depth = FloatField('Depth')
+    # nitrogenlevel = FloatField('NitrogenLevel')
+    # organicmatterlevel = FloatField('OrganicMatterLevel')
+    # phosphoruslevel = FloatField('PhosphorusLevel')
+    # potassiumlevel = FloatField('PotassiumLevel')
+    # soilmoisture = FloatField('SoilMoisture')
     submit = SubmitField('Register Soil Sample Data')

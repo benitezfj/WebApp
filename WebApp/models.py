@@ -39,6 +39,23 @@ class Historical(db.Model):
     product_obtained = db.Column(db.Float)
     def __repr__(self):
         return f"Historical('{self.current_farm_id}', '{self.historical_farm_id}')"
+    
+    
+    
+class HistoricFarmland(db.Model):
+    __tablename__ = 'historicfarmlands'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    current_farm_id = db.Column(db.Integer, db.ForeignKey('farmlands.id'))
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    croptype_id = db.Column(db.Integer, db.ForeignKey('crops.id'))
+    sow_date = db.Column(db.Date)
+    harvest_date = db.Column(db.Date)
+    product_obtained = db.Column(db.Float)
+    product_expected = db.Column(db.Float)
+    coordinates = db.Column(db.String(200), unique=True, nullable=False)
+    
+    def __repr__(self):
+        return f"HistoricFarmland('{self.current_farm_id}', '{self.name}', '{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_obtained}', '{self.product_expected}', '{self.coordinates}')"
 
 
 class Farmland(db.Model):
@@ -59,6 +76,8 @@ class Farmland(db.Model):
                                       foreign_keys=[Historical.historical_farm_id], 
                                       backref=db.backref('historical', lazy='joined'), 
                                       lazy=True)
+    historicalfarmlands = db.relationship('HistoricFarmland', backref='farmland', lazy=True)
+    
     def __repr__(self):
         return f"Farmland('{self.name}', '{self.croptype_id}', '{self.sow_date}', '{self.harvest_date}', '{self.product_expected}', '{self.coordinates}')"
 

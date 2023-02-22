@@ -14,7 +14,7 @@ if __name__ == '__main__':
 # from WebApp import db, create_app
 # app = create_app()
 # app.app_context().push()
-# from WebApp.models import User, Role, Farmland, Crop, Historical
+# from WebApp.models import User, Role, Farmland, Crop, Historical, HistoricFarmland
 # db.create_all()
 
 # Create three roles
@@ -72,4 +72,5 @@ if __name__ == '__main__':
 # import inspect
 # lines = inspect.getsource(foo)
 # print(lines)
+# HistoricFarmland.__table__.drop()
 # DELETE FROM tables;

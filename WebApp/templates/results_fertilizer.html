@@ -25,7 +25,6 @@
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Calculate Posology</legend>
 
-            
             <div class="form-group">
             	{{ form.farmland.label(class="form-control-label") }}
             	<p class="form-control form-control-lg" type="text" id="farmland" disabled></p>
@@ -43,35 +42,60 @@
                 <div class="folium-map" id="Map" ></div>
             </div>
             
-            <div class="row">
-                <div class="column">            
+            <div class="column">
+            	<div class="row">
                     <table>
-                      <thead>
-                        <tr>
-                            <th>Expected Crop Productivity</th>
-                            <th>NPK Commercial</th>
-                            <th>Posology (Kg/ha)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                        <thead>
                           <tr>
-                          
-                            <td rowspan="3">{{fertilizer_measure[0]}} Tones per ha</td>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][0]}}</td>
+                              <th>Expected Crop Productivity</th>
+                              <th>NPK Commercial</th>
+                              <th>Posology (Kg/ha)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td rowspan="9">{{fertilizer_measure[0]}} Tones per ha</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][0]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][1]}}</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][1]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
-                            <td bgcolor="#FFFFFF">{{fertilizer_measure[1][2]}}</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][2]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#fff400">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][0]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#fff400">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][1]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#fff400">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][2]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][0]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][1]}}</td>
+                          </tr>
+                          <tr>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][2]}}</td>
                           </tr>
                       </tbody>
                     </table>
-                </div>
-                <div class="column">
+            	</div>
+            </div>
+            <div class="column">
+            	<div class="row">
                     <table>
                       <tr>
                         <th>Nutrients</th>
@@ -122,9 +146,8 @@
                         <td>{{nutrient[10]}}</td>
                       </tr>
                     </table>
-                </div>
-            </div>
-            
+            	</div>  
+            </div> 
             
         </fieldset>    
         <script>
