@@ -71,24 +71,15 @@
                         {{ form.croptype(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <div class="form-group">
-            
-                     {{ form.coordinates.label(class="form-control-label") }}
-
-                     {% if form.coordinates.errors %} 
-                         {{ form.coordinates(class="form-control form-control-lg is-invalid") }}
-                         <div class="invalid-feedback">
-                             {% for error in form.coordinates.errors %}
-                                 <span>{{ error }}</span>
-                             {% endfor %}
-                         </div>
-                     {% else %}
-                         {{ form.coordinates(class="form-control form-control-lg", disabled=True) }}
-                     {% endif %}
-                    
-                </div>
-                <div class="form-group">   
                 
+                <div class="form-group">
+                     <label class="form-control-label" for="coordinates">Coordinates</label>	
+                     <input class="form-control form-control-lg" id="coordinates" name="coordinates" type="text" value="" required disabled>
+                </div>
+    
+                <div class="form-group">   
+                    <label for="Map" style="white-space: nowrap;">Please select your crop field in the map using polygon tool</label>
+                    <br>
                     <div class="folium-map" id="Map" ></div>
                     <a href='#' id='get_coords' class="btn btn-outline-info">Get Coords</a>   
                                 

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FloatField, DateField, RadioField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField, DateField, TextAreaField #, RadioField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from WebApp.models import User, Role, Crop
+from WebApp.models import User, Role, Crop, Farmland
 import datetime
 '''
 wtforms
@@ -46,7 +46,7 @@ class RegistrationRoleForm(FlaskForm):
                               validators=[DataRequired(), Length(min=2, max=20)])
     submit = SubmitField('Register')
     
-    def validate_role(self, description):
+    def validate_description(self, description):
         role_data = Role.query.filter_by(description=description.data).first()
         if role_data:
             raise ValidationError('That role is already created.')
@@ -57,7 +57,7 @@ class RegistrationCropForm(FlaskForm):
                               validators=[DataRequired(), Length(min=2, max=20)])
     submit = SubmitField('Register')
     
-    def validate_crop(self, description):
+    def validate_description(self, description):
         crop_data = Crop.query.filter_by(description=description.data).first()
         if crop_data:
             raise ValidationError('That crop is already created.')
@@ -78,17 +78,19 @@ class MapForm(FlaskForm):
     index_date = DateField('Index Date', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Find Location')
     
-    def validate_dates(self, index_date):
-        try:
-            indexdate = datetime.date(index_date.data)
-            print(indexdate)
-        except ValueError:
-            raise ValidationError("Invalid End Date or Start Date.")
-        today_date = datetime.datetime.now()
-        today_date = datetime.date(today_date.year, today_date.month, today_date.day)
-        print(indexdate > today_date)
-        if (indexdate > today_date):
+    def validate_index_date(self, field):
+        if (field.data > datetime.date.today()):
             raise ValidationError("The Index Date can not be later the Current Date.")
+        # try:
+        #     indexdate = datetime.date(index_date.data)
+        #     print(indexdate)
+        # except ValueError:
+        #     raise ValidationError("Invalid End Date or Start Date.")
+        # today_date = datetime.datetime.now()
+        # today_date = datetime.date(today_date.year, today_date.month, today_date.day)
+        # print(indexdate > today_date)
+        # if (indexdate > today_date):
+        #     raise ValidationError("The Index Date can not be later the Current Date.")
             
 
 class InsertFarmlandForm(FlaskForm):
@@ -97,45 +99,45 @@ class InsertFarmlandForm(FlaskForm):
     croptype = SelectField('Crop Type', coerce=int)
     sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
     harvestdate = DateField('Harvest', format='%Y-%m-%d', validators=[DataRequired()])
-    productexpected =  FloatField("Production Expected (Kg/ha)", validators=[Optional()], default=0)
-    coordinates = StringField('Coordinates', validators=[DataRequired()])
+    productexpected =  FloatField("Production Expected (Tons/ha)", validators=[Optional()], default=0)
+    
     submit = SubmitField('Register the Crop Field.')
     
-    def validate_production_expected(self, productexpected):
-        try:
-            prod_exp = float(productexpected.data)
-        except ValueError:
-            raise ValidationError("Invalid Production Harvest Data.")
-        if prod_exp < 0:
+    # coordinates = StringField('Coordinates', validators=[DataRequired()])
+    
+    def validate_name(self, field):
+        if Farmland.query.filter_by(name=field.data).first():
+            raise ValidationError('Farmland name already in use.')
+            
+    def validate_productexpected(self, field):
+        if field.data < 0:
             raise ValidationError("The Production Expected must be a Positive Value.")
-        if prod_exp == "":
-            raise ValidationError("The Production Expected can not be empty.")
-            
-    def validate_dates(self, sowdate, harvestdate):
-        try:
-            sow_date = datetime.date(sowdate.data)
-            harvest_date = datetime.date(harvestdate.data)
-        except ValueError:
-            raise ValidationError("Invalid Seedtime or Harvest Time.")
-        if sow_date >= harvest_date:
-            raise ValidationError("The Harvest Date must be after the Seedtime.")
-            
+        # if prod_exp == "":
+        #     raise ValidationError("The Production Expected can not be empty.")
+        # try:
+        #     prod_exp = float(productexpected.data)
+        # except ValueError:
+        #     raise ValidationError("Invalid Production Harvest Data.")
+
+    def validate_sowdate(self, field):
+         if field.data >= self.harvestdate.data:
+             raise ValidationError("The Seed Date must be before the Harvest Date.")            
             
 class HistoricalForm(FlaskForm):
     current_farm = SelectField('Current Farmland', coerce=int)
     historical_farm = SelectField('Historical Farmland', coerce=int)
-    productobtained = FloatField("Production Obtained (Kg/ha)", validators=[Optional()], default=0)
+    productobtained = FloatField("Production Obtained (Tons/ha)", validators=[Optional()], default=0)
     submit = SubmitField('Register the Historic Farmland.')
     
-    def validate_production_obtained(self, productobtained):
-        try:
-            prod_obt = float(productobtained.data)
-        except ValueError:
-            raise ValidationError("Invalid Production Obtained Data.")
-        if prod_obt < 0:
+    def validate_productobtained(self, field):
+        if field.data < 0:
             raise ValidationError("The Production Obtained must be a Positive Value.")
-        if prod_obt == "":
-            raise ValidationError("The Production Obtained can not be empty.")
+        # if prod_obt == "":
+        #     raise ValidationError("The Production Obtained can not be empty.")
+        # try:
+        #     prod_obt = float(productobtained.data)
+        # except ValueError:
+        #     raise ValidationError("Invalid Production Obtained Data.")
 
 
 class FertilizarMapForm(FlaskForm):
@@ -145,102 +147,264 @@ class FertilizarMapForm(FlaskForm):
     
 class InsertHistoricalForm(FlaskForm):
     current_farm = SelectField('Current Farmland', coerce=int)
-    name = StringField('Historic Farmland Description', 
-                       validators=[DataRequired(), Length(min=2, max=50)])
-    croptype = SelectField('Crop Type', coerce=int)
-    sowdate = DateField('Seedtime', format='%Y-%m-%d', validators=[DataRequired()])
-    harvestdate = DateField('Harvest Date', format='%Y-%m-%d', validators=[DataRequired()])
-    productobtained = FloatField("Production Obtained (Kg/ha)", validators=[Optional()], default=0)
+    # Historic
+    croptype1 = SelectField('Crop Type', coerce=int, validators=[Optional()])
+    sowdate1 = DateField('Historic Seed Date', format='%Y-%m-%d', validators=[Optional()])
+    harvestdate1 = DateField('Historic Harvest Date', format='%Y-%m-%d', validators=[Optional()])
+    productobtained = FloatField("Production Obtained (Tons/ha)", validators=[Optional()], default=0)
     
+    # Type1
+    nitrogen1 = FloatField("Nitrogen", validators=[Optional()], default=0)
+    phosphorus1 = FloatField("Phosphorus", validators=[Optional()], default=0)
+    potassium1 = FloatField("Potassium", validators=[Optional()], default=0)
+    posology1 = FloatField("Posology N-P-K (Kg/ha)", validators=[Optional()], default=0)
     
-    fertilizartype = SelectMultipleField('Fertilizer Type', coerce=int, choices=[(1, ' ')])
-    posology = StringField("Posology N-P-K", validators=[Optional()])
+    # Type2
+    nitrogen2 = FloatField("Nitrogen", validators=[Optional()], default=0)
+    phosphorus2 = FloatField("Phosphorus", validators=[Optional()], default=0)
+    potassium2 = FloatField("Potassium", validators=[Optional()], default=0)
+    posology2 = FloatField("Posology N-P-K (Kg/ha)", validators=[Optional()], default=0)
     
-    fungicidetreatmenttype = SelectMultipleField("Fungicide Treatment Type", coerce=int, choices=[(1, ' ')])
-    fungicidetreatmentdate = DateField('Fungicide Treatment Date', validators=[Optional()])
-    fungicideposology = StringField("Fungicide Posology N-P-K", validators=[Optional()])
-    fungicidetreatment = StringField("Fungicide Treatment Observation", validators=[Optional()])
+    # Type3
+    nitrogen3 = FloatField("Nitrogen", validators=[Optional()], default=0)
+    phosphorus3 = FloatField("Phosphorus", validators=[Optional()], default=0)
+    potassium3 = FloatField("Potassium", validators=[Optional()], default=0)
+    posology3 = FloatField("Posology N-P-K (Kg/ha)", validators=[Optional()], default=0)
     
-    herbicidetreatmenttype = SelectMultipleField('Herbicide Treatment Type', coerce=int, choices=[(1, ' ')])
-    herbicidetreatmentdate = DateField("Herbicide Treatment Date", validators=[Optional()])
-    herbicideposology = StringField("Herbicide Posology N-P-K", validators=[Optional()])
-    herbicidetreatment = StringField('Herbicide Treatment', validators=[Optional()])
-    
-    pesticidetreatmenttype = SelectMultipleField('Pesticide Treatment Type', coerce=int, choices=[(1, ' ')])
-    pesticidetreatmentdate = DateField('Pesticide Treatment Date', validators=[Optional()])
-    pesticideposology = StringField("Pesticide Posology N-P-K", validators=[Optional()])
-    pesticidetreatment = StringField('Pesticide Treatment', validators=[Optional()])
-    
-    anothertreatmenttype = SelectMultipleField('Another Treatment Type', coerce=int, choices=[(1, ' ')])
-    anothertreatmentdate = DateField('Another Treatment Date', validators=[Optional()])
-    anotherposology = StringField("Another Posology N-P-K", validators=[Optional()])
-    anothertreatment = StringField('Another Treatment', validators=[Optional()])
-
-    diseasesabnormalities = StringField('Disease or Abnormality', validators=[Length(min=2, max=150)])
-    treatmentobservation = StringField('Observation', validators=[Length(min=2, max=150)])
-    
-    soilsampledate = DateField('Soil Sample Date', validators=[Optional()])
-    depth = FloatField('Depth', validators=[Optional()], default=0)
-    nitrogenlevel = FloatField('Nitrogen Level', validators=[Optional()], default=0)
-    organicmatterlevel = FloatField('Organic Matter Level', validators=[Optional()], default=0)
-    phosphoruslevel = FloatField('Phosphorus Level', validators=[Optional()], default=0)
-    potassiumlevel = FloatField('Potassium Level', validators=[Optional()], default=0)
-    soilmoisture = FloatField('Soil Moisture', validators=[Optional()], default=0)
-    
+    diseasesabnormalities = TextAreaField('Disease or Abnormality')
+    diseasesabnormalitiesdate = DateField('Date of the Abnormality', format='%Y-%m-%d', validators=[Optional()])
+    treatmentobservation = TextAreaField('Other relevant information (frost, drought)')
+   
     submit = SubmitField('Register the Historic Farmland.')
-    
-    def validate_production_obtained(self, productobtained):
-        try:
-            prod_obt = float(productobtained.data)
-        except ValueError:
-            raise ValidationError("Invalid Production Obtained Data.")
-        if prod_obt < 0:
+        
+    def validate_productobtained(self, field):
+        if field.data < 0:
             raise ValidationError("The Production Obtained must be a Positive Value.")
-        if prod_obt == "":
+        if field.data == "":
             raise ValidationError("The Production Obtained can not be empty.")
-    
-    def validate_harvest_date(self, harvestdate):
-        try:
-            harvest_date = datetime.date(harvestdate.data)
-        except ValueError:
-            raise ValidationError("Invalid Seedtime or Harvest Time.")
-        if harvest_date >= datetime.today().strftime('%Y-%m-%d'):
+        # try:
+        #     prod_obt = float(self.productobtained.data)
+        # except ValueError:
+        #     raise ValidationError("Invalid Production Obtained Data.")
+
+    def validate_harvestdate1(self, field):
+        if field.data >= datetime.date.today():
             raise ValidationError("The Harvest Date must be a past date.")
+        # try:
+        #     datetime.date(self.harvestdate1.data)
+        # except ValueError:
+        #     raise ValidationError("Invalid Seedtime or Harvest Time.")
             
-    def validate_sow_date(self, sowdate, harvestdate):
-        try:
-            sow_date = datetime.date(sowdate.data)
-        except ValueError:
-            raise ValidationError("Invalid Seedtime or Harvest Time.")
-        if sow_date >= datetime.today().strftime('%Y-%m-%d'):
-            raise ValidationError("The Sow Date must be after the Seedtime.")
+    def validate_sowdate1(self, field):
+        if field.data >= self.harvestdate1.data:
+            raise ValidationError("The Seed Date must be before the Harvest Date.")
+            
+    def validate_diseasesabnormalitiesdate(self, field):
+        if (self.sowdate1.data > field.data) and (field.data > self.harvestdate1.data):
+            raise ValidationError("The Date of Diseases or Abnormalities must be between Seed Date and Harvest Date.")
+        # try:
+        #     sow_date = datetime.date(self.sowdate1.data)
+        # except ValueError:
+        #     raise ValidationError("Invalid Seedtime or Harvest Time.")
 
 
 
+class SoilForm(FlaskForm):
+    current_farm = SelectField('Current Farmland', coerce=int)
+    soilsampledate = DateField('Soil Test Date', validators=[Optional()])
+    depth = FloatField('Sampling Depth (cm)', validators=[Optional()], default=0)
+    organicmatterlevel = FloatField('Organic Matter o N (%)', validators=[Optional()], default=0)
+    phosphorus_1 = FloatField('P (ppm)', validators=[Optional()], default=0)
+    phosphorus_2 = FloatField('P (mg/dm3)', validators=[Optional()], default=0)
+    potassium_1 = FloatField('K (cmolc/dm3)', validators=[Optional()], default=0)
+    potassium_2 = FloatField('K (mg/dm3)', validators=[Optional()], default=0)
+    calcium_1 = FloatField('Ca (cmolc/dm3)', validators=[Optional()], default=0)
+    calcium_2 = FloatField('Ca (mg/dm3)', validators=[Optional()], default=0)
+    sand = FloatField('Sand', validators=[Optional()], default=0)
+    slit = FloatField('Slit', validators=[Optional()], default=0)
+    clay = FloatField('Clay', validators=[Optional()], default=0)
+    sulfur = FloatField('Sulfur (mg/dm3)', validators=[Optional()], default=0)
+    magnesium = FloatField('Mg (mg/dm3)', validators=[Optional()], default=0)
+    boron = FloatField('B (mg/dm3)', validators=[Optional()], default=0)
+    copper = FloatField('Cu (mg/dm3)', validators=[Optional()], default=0)
+    zinc = FloatField('Zn (mg/dm3)', validators=[Optional()], default=0)
+    manganese = FloatField('Mn (mg/dm3)', validators=[Optional()], default=0)
+    submit = SubmitField('Register Soil Sample Data')
+
+    def validate_depth(self, field):
+        if (field.data < 0):
+            raise ValidationError('Depth can not be a negative value.')
+
+    def validate_organicmatterlevel(self, field):
+        if (field.data < 0):
+            raise ValidationError('Organic Matter Level can not be a negative value.')
+        if (field.data > 100):
+            raise ValidationError('Organic Matter Level can not higher than 100%.')
+
+    def validate_phosphorus_1(self, field):
+        if (field.data < 0):
+            raise ValidationError('Phosphorus value can not be a negative value.')
+
+    def validate_phosphorus_2(self, field):
+        if (field.data < 0):
+            raise ValidationError('Phosphorus value can not be a negative value.')
+
+    def validate_potassium_1(self, field):
+        if (field.data < 0):
+            raise ValidationError('Potassium value can not be a negative value.')
+
+    def validate_potassium_2(self, field):
+        if (field.data < 0):
+            raise ValidationError('Potassium value can not be a negative value.')
+
+    def validate_calcium_1(self, field):
+        if (field.data < 0):
+            raise ValidationError('Calcium value can not be a negative value.')
+
+    def validate_calcium_2(self, field):
+        if (field.data < 0):
+            raise ValidationError('Calcium value can not be a negative value.')
+
+    def validate_sand(self, field):
+        if (field.data < 0):
+            raise ValidationError('Sand value can not be a negative value.')
+
+    def validate_slit(self, field):
+        if (field.data < 0):
+            raise ValidationError('Slit value can not be a negative value.')
+
+    def validate_clay(self, field):
+        if (field.data < 0):
+            raise ValidationError('Clay value can not be a negative value.')
+
+    def validate_sulfur(self, field):
+        if (field.data < 0):
+            raise ValidationError('Sulfur value can not be a negative value.')
+
+    def validate_magnesium(self, field):
+        if (field.data < 0):
+            raise ValidationError('Magnesium value can not be a negative value.')
+
+    def validate_boron(self, field):
+        if (field.data < 0):
+            raise ValidationError('Boron value can not be a negative value.')
+
+    def validate_copper(self, field):
+        if (field.data < 0):
+            raise ValidationError('Copper value can not be a negative value.')
+
+    def validate_zinc(self, field):
+        if (field.data < 0):
+            raise ValidationError('Zinc value can not be a negative value.')
+
+    def validate_manganese(self, field):
+        if (field.data < 0):
+            raise ValidationError('Manganese value can not be a negative value.')
+            
+class CalculatorForm(FlaskForm):
+    nitrogen = FloatField("N (kg/ha)", validators=[DataRequired()], default=0)
+    phosphorus = FloatField("P (kg/ha)", validators=[DataRequired()], default=0)
+    potassium = FloatField("K (kg/ha)", validators=[DataRequired()], default=0)
+    submit = SubmitField('Calculate')
+    
+    def validate_nitrogen(self, field):
+        if (field.data < 0):
+            raise ValidationError('Nitrogen can not be a negative value.')
+            
+    def validate_phosphorus(self, field):
+        if (field.data < 0):
+            raise ValidationError('Phosphorus can not be a negative value.')
+        
+    def validate_potassium(self, field):
+        if (field.data < 0):
+            raise ValidationError('Potassium can not be a negative value.')
+
+    
+class InsertFullForm(FlaskForm):
+    name = StringField('Farmland Description', validators=[DataRequired(), Length(min=2, max=50)])
+    croptype = SelectField('Crop Type', coerce=int)
+    sowdate = DateField('Seed Date', format='%Y-%m-%d', validators=[DataRequired()])
+    harvestdate = DateField('Harvest Date', format='%Y-%m-%d', validators=[DataRequired()])
+    productexpected =  FloatField("Production Expected (Tons/ha)", validators=[DataRequired()], default=0)
+    
+    # Historic
+    croptype1 = SelectField('Crop Type', coerce=int)
+    sowdate1 = DateField('Historic Seed Date', format='%Y-%m-%d', default=datetime.date.today)
+    harvestdate1 = DateField('Historic Harvest Date', format='%Y-%m-%d', default=datetime.date.today)
+    productobtained = FloatField("Production Obtained (Tons/ha)", default=0)
+    # Type1
+    nitrogen1 = FloatField("Nitrogen", default=0)
+    phosphorus1 = FloatField("Phosphorus", default=0)
+    potassium1 = FloatField("Potassium", default=0)
+    posology1 = FloatField("Posology N-P-K (Kg/ha)", default=0)
+    # Type2
+    nitrogen2 = FloatField("Nitrogen", default=0)
+    phosphorus2 = FloatField("Phosphorus", default=0)
+    potassium2 = FloatField("Potassium", default=0)
+    posology2 = FloatField("Posology N-P-K (Kg/ha)", default=0)
+    # Type3
+    nitrogen3 = FloatField("Nitrogen", default=0)
+    phosphorus3 = FloatField("Phosphorus", default=0)
+    potassium3 = FloatField("Potassium", default=0)
+    posology3 = FloatField("Posology N-P-K (Kg/ha)", default=0)
+    diseasesabnormalities = TextAreaField('Disease or Abnormality')
+    diseasesabnormalitiesdate = DateField('Date of the Abnormality', format='%Y-%m-%d', default=datetime.date.today)
+    treatmentobservation = TextAreaField('Other relevant information (frost, drought)')
+    # Soil Test
+    soilsampledate = DateField('Soil Test Date', default=datetime.date.today)
+    depth = FloatField('Sampling Depth (cm)', default=0)
+    organicmatterlevel = FloatField('Organic Matter o N (%)', default=0)
+    phosphorus_1 = FloatField('P (ppm)', default=0)
+    phosphorus_2 = FloatField('P (mg/dm3)', default=0)
+    potassium_1 = FloatField('K (cmolc/dm3)', default=0)
+    potassium_2 = FloatField('K (mg/dm3)', default=0)
+    calcium_1 = FloatField('Ca (cmolc/dm3)', default=0)
+    calcium_2 = FloatField('Ca (mg/dm3)', default=0)
+    sand = FloatField('Sand', default=0)
+    slit = FloatField('Slit', default=0)
+    clay = FloatField('Clay', default=0)
+    sulfur = FloatField('Sulfur (mg/dm3)', default=0)
+    magnesium = FloatField('Mg (mg/dm3)', default=0)
+    boron = FloatField('B (mg/dm3)', default=0)
+    copper = FloatField('Cu (mg/dm3)', default=0)
+    zinc = FloatField('Zn (mg/dm3)', default=0)
+    manganese = FloatField('Mn (mg/dm3)', default=0)
+   
+    submit = SubmitField('Register the Crop Field.')    
+
+    def validate_name(self, field):
+        if Farmland.query.filter_by(name=field.data).first():
+            raise ValidationError('Farmland name already in use.')
+
+    def validate_harvestdate(self, field):
+        if field.data <= datetime.date.today():
+            raise ValidationError("The Harvest Date must be a future date.")
+        
+    def validate_sowdate(self, field):
+        if field.data >= self.harvestdate.data:
+            raise ValidationError("Seed time must be before Harvest time.")
+    
+    def validate_productexpected(self, field):
+        if field.data < 0:
+            raise ValidationError("The Production Expected must be a Positive Value.")
+        # if self.productexpected.data == "":
+        #     raise ValidationError("The Production Expected can not be empty.")
+        
 
 # ----------------------------Detalles
-class FertilizarForm(FlaskForm):
+#class FertilizarForm(FlaskForm):
     # fertilizartype = SelectMultipleField('FertilizerType', coerce=int)
     # posology = StringField("Posology") #Agregar validadores
     # diseasesabnormalities = StringField('DiseaseOrAbnormality', validators=[Length(min=2, max=150)])
     # observation = StringField('Obs', validators=[Length(min=2, max=150)])
-    submit = SubmitField('Register Fertilizer Data')
+    # submit = SubmitField('Register Fertilizer Data')
     
-class TreatmentForm(FlaskForm):
+# class TreatmentForm(FlaskForm):
     # treatment = StringField('Treatment')
     # treatmenttype = SelectMultipleField('TreatmentType', coerce=int)
     # treatmentdate = DateField('TreatmentDate')
     
     # treatmentobservation = StringField('Obs', validators=[Length(min=2, max=150)])
-    submit = SubmitField('Register Treatment Data')
+    # submit = SubmitField('Register Treatment Data')
     
-class SoilForm(FlaskForm):    
-    # soilsampledate = DateField('TreatmentDate')
-    # location = FloatField('Location')
-    # depth = FloatField('Depth')
-    # nitrogenlevel = FloatField('NitrogenLevel')
-    # organicmatterlevel = FloatField('OrganicMatterLevel')
-    # phosphoruslevel = FloatField('PhosphorusLevel')
-    # potassiumlevel = FloatField('PotassiumLevel')
-    # soilmoisture = FloatField('SoilMoisture')
-    submit = SubmitField('Register Soil Sample Data')
+# -----------------Test    

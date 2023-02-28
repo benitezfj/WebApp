@@ -18,499 +18,245 @@
                     {% else %}
                         {{ form.current_farm(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
+                </div>                
                 
-                <div class="form-group">
-                    {{ form.name.label(class="form-control-label") }}
-                    
-                    {% if form.name.errors %}
-                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                {{ form.croptype1.label(class="form-control-label") }}
+                {% if form.croptype1.errors %}
+                    {{ form.croptype1(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.croptype1.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.croptype1(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>    
+                {{ form.sowdate1.label(class="form-control-label", style="white-space: nowrap;") }}    
+                {% if form.sowdate1.errors %}
+                    {{ form.sowdate1(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.sowdate1.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.sowdate1(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>                
+                {{ form.harvestdate1.label(class="form-control-label", style="white-space: nowrap;") }}    
+                {% if form.harvestdate1.errors %}
+                    {{ form.harvestdate1(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.harvestdate1.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.harvestdate1(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                {{ form.productobtained.label(class="form-control-label", style="white-space: nowrap;") }}    
+                {% if form.productobtained.errors %}
+                    {{ form.productobtained(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.productobtained.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.productobtained(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                <div class="input-group">
+                <legend class="border-bottom mb-4">Type 1</legend>
+                    {{ form.nitrogen1.label(class="form-control-label") }}
+                    {% if form.nitrogen1.errors %}
+                        {{ form.nitrogen1(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.name.errors %}
+                            {% for error in form.nitrogen1.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.name(class="form-control form-control-lg") }}
+                        {{ form.nitrogen1(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.croptype.label(class="form-control-label") }}
-                    
-                    {% if form.croptype.errors %}
-                        {{ form.croptype(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.croptype.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.croptype(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.sowdate.label(class="form-control-label") }}
-                    
-                    {% if form.sowdate.errors %}
-                        {{ form.sowdate(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.sowdate.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.sowdate(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.harvestdate.label(class="form-control-label") }}
-                    
-                    {% if form.harvestdate.errors %}
-                        {{ form.harvestdate(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.harvestdate.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.harvestdate(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
 
-                <div class="form-group">
-                    {{ form.productobtained.label(class="form-control-label") }}
-                    
-                    {% if form.productobtained.errors %}
-                        {{ form.productobtained(class="form-control form-control-lg is-invalid") }}
+                    {{ form.phosphorus1.label(class="form-control-label") }}                    
+                    {% if form.phosphorus1.errors %}
+                        {{ form.phosphorus1(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.productobtained.errors %}
+                            {% for error in form.phosphorus1.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.productobtained(class="form-control form-control-lg") }}
+                        {{ form.phosphorus1(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
-                
-                
-                
-                
-                <legend class="border-bottom mb-4">Fertilizar Treatment</legend>
-                <div class="form-group">
-                    {{ form.fertilizartype.label(class="form-control-label") }}
-                    
-                    {% if form.fertilizartype.errors %}
-                        {{ form.fertilizartype(class="form-control form-control-lg is-invalid") }}
+
+                    {{ form.potassium1.label(class="form-control-label") }}
+                    {% if form.potassium1.errors %}
+                        {{ form.potassium1(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.fertilizartype.errors %}
+                            {% for error in form.potassium1.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.fertilizartype(class="form-control form-control-lg") }}
+                        {{ form.potassium1(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.posology.label(class="form-control-label") }}
-                    
-                    {% if form.posology.errors %}
-                        {{ form.posology(class="form-control form-control-lg is-invalid") }}
+                    {{ form.posology1.label(class="form-control-label") }}        
+                    {% if form.posology1.errors %}
+                        {{ form.posology1(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.posology.errors %}
+                            {% for error in form.posology1.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.posology(class="form-control form-control-lg") }}
+                        {{ form.posology1(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                
-                <legend class="border-bottom mb-4">Fungicide Treatment</legend>
-                <div class="form-group">
-                    {{ form.fungicidetreatmenttype.label(class="form-control-label") }}
-                    
-                    {% if form.fungicidetreatmenttype.errors %}
-                        {{ form.fungicidetreatmenttype(class="form-control form-control-lg is-invalid") }}
+                <br>
+                <div class="input-group">
+                    <legend class="border-bottom mb-4">Type 2</legend>
+                    {{ form.nitrogen2.label(class="form-control-label") }}
+                    {% if form.nitrogen2.errors %}
+                        {{ form.nitrogen2(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.fungicidetreatmenttype.errors %}
+                            {% for error in form.nitrogen2.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.fungicidetreatmenttype(class="form-control form-control-lg") }}
+                        {{ form.nitrogen2(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.fungicidetreatmentdate.label(class="form-control-label") }}
-                    
-                    {% if form.fungicidetreatmentdate.errors %}
-                        {{ form.fungicidetreatmentdate(class="form-control form-control-lg is-invalid") }}
+                    {{ form.phosphorus2.label(class="form-control-label") }}
+                    {% if form.phosphorus2.errors %}
+                        {{ form.phosphorus2(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.fungicidetreatmentdate.errors %}
+                            {% for error in form.phosphorus2.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.fungicidetreatmentdate(class="form-control form-control-lg") }}
+                        {{ form.phosphorus2(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.fungicideposology.label(class="form-control-label") }}
-                    
-                    {% if form.fungicideposology.errors %}
-                        {{ form.fungicideposology(class="form-control form-control-lg is-invalid") }}
+                    {{ form.potassium2.label(class="form-control-label") }}
+                    {% if form.potassium2.errors %}
+                        {{ form.potassium2(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.fungicideposology.errors %}
+                            {% for error in form.potassium2.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.fungicideposology(class="form-control form-control-lg") }}
+                        {{ form.potassium2(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.fungicidetreatment.label(class="form-control-label") }}
-                    
-                    {% if form.fungicidetreatment.errors %}
-                        {{ form.fungicidetreatment(class="form-control form-control-lg is-invalid") }}
+                    {{ form.posology2.label(class="form-control-label") }}
+                    {% if form.posology2.errors %}
+                        {{ form.posology2(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.fungicidetreatment.errors %}
+                            {% for error in form.posology2.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.fungicidetreatment(class="form-control form-control-lg") }}
+                        {{ form.posology2(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <legend class="border-bottom mb-4">Herbicide Treatment</legend>
-                <div class="form-group">
-                    {{ form.herbicidetreatmenttype.label(class="form-control-label") }}
-                    
-                    {% if form.herbicidetreatmenttype.errors %}
-                        {{ form.herbicidetreatmenttype(class="form-control form-control-lg is-invalid") }}
+                </div>                
+                <br>
+                <div class="input-group">
+                    <legend class="border-bottom mb-4">Type 3</legend>
+                    {{ form.nitrogen3.label(class="form-control-label") }}
+                    {% if form.nitrogen3.errors %}
+                        {{ form.nitrogen3(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.herbicidetreatmenttype.errors %}
+                            {% for error in form.nitrogen3.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.herbicidetreatmenttype(class="form-control form-control-lg") }}
+                        {{ form.nitrogen3(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.herbicidetreatmentdate.label(class="form-control-label") }}
-                    
-                    {% if form.herbicidetreatmentdate.errors %}
-                        {{ form.herbicidetreatmentdate(class="form-control form-control-lg is-invalid") }}
+                    {{ form.phosphorus3.label(class="form-control-label") }}
+                    {% if form.phosphorus3.errors %}
+                        {{ form.phosphorus3(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.herbicidetreatmentdate.errors %}
+                            {% for error in form.phosphorus3.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.herbicidetreatmentdate(class="form-control form-control-lg") }}
+                        {{ form.phosphorus3(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.herbicideposology.label(class="form-control-label") }}
-                    
-                    {% if form.herbicideposology.errors %}
-                        {{ form.herbicideposology(class="form-control form-control-lg is-invalid") }}
+                    {{ form.potassium3.label(class="form-control-label") }}
+                    {% if form.potassium3.errors %}
+                        {{ form.potassium3(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.herbicideposology.errors %}
+                            {% for error in form.potassium3.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.herbicideposology(class="form-control form-control-lg") }}
+                        {{ form.potassium3(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
                 
-                <div class="form-group">
-                    {{ form.herbicidetreatment.label(class="form-control-label") }}
-                    
-                    {% if form.herbicidetreatment.errors %}
-                        {{ form.herbicidetreatment(class="form-control form-control-lg is-invalid") }}
+                    {{ form.posology3.label(class="form-control-label") }}
+                    {% if form.posology3.errors %}
+                        {{ form.posology3(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.herbicidetreatment.errors %}
+                            {% for error in form.posology3.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.herbicidetreatment(class="form-control form-control-lg") }}
+                        {{ form.posology3(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                
-                
-                <legend class="border-bottom mb-4">Pesticide Treatment</legend>
-                <div class="form-group">
-                    {{ form.pesticidetreatmenttype.label(class="form-control-label") }}
-                    
-                    {% if form.pesticidetreatmenttype.errors %}
-                        {{ form.pesticidetreatmenttype(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.pesticidetreatmenttype.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.pesticidetreatmenttype(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.pesticidetreatmentdate.label(class="form-control-label") }}
-                    
-                    {% if form.pesticidetreatmentdate.errors %}
-                        {{ form.pesticidetreatmentdate(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.pesticidetreatmentdate.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.pesticidetreatmentdate(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.pesticideposology.label(class="form-control-label") }}
-                    
-                    {% if form.pesticideposology.errors %}
-                        {{ form.pesticideposology(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.pesticideposology.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.pesticideposology(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.pesticidetreatment.label(class="form-control-label") }}
-                    
-                    {% if form.pesticidetreatment.errors %}
-                        {{ form.pesticidetreatment(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.pesticidetreatment.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.pesticidetreatment(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <legend class="border-bottom mb-4">Another Treatment</legend>
-                <div class="form-group">
-                    {{ form.anothertreatmenttype.label(class="form-control-label") }}
-                    
-                    {% if form.anothertreatmenttype.errors %}
-                        {{ form.anothertreatmenttype(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.anothertreatmenttype.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.anothertreatmenttype(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.anothertreatmentdate.label(class="form-control-label") }}
-                    
-                    {% if form.anothertreatmentdate.errors %}
-                        {{ form.anothertreatmentdate(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.anothertreatmentdate.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.anothertreatmentdate(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.anotherposology.label(class="form-control-label") }}
-                    
-                    {% if form.anotherposology.errors %}
-                        {{ form.anotherposology(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.anotherposology.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.anotherposology(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.anothertreatment.label(class="form-control-label") }}
-                    
-                    {% if form.anothertreatment.errors %}
-                        {{ form.anothertreatment(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.anothertreatment.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.anothertreatment(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <legend class="border-bottom mb-4">Other Information</legend>
-                <div class="form-group">
-                    {{ form.diseasesabnormalities.label(class="form-control-label") }}
-                    
-                    {% if form.diseasesabnormalities.errors %}
-                        {{ form.diseasesabnormalities(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.diseasesabnormalities.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.diseasesabnormalities(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.treatmentobservation.label(class="form-control-label") }}
-                    
-                    {% if form.treatmentobservation.errors %}
-                        {{ form.treatmentobservation(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.treatmentobservation.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.treatmentobservation(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <legend class="border-bottom mb-4">Soil Data</legend>
-                <div class="form-group">
-                    {{ form.soilsampledate.label(class="form-control-label") }}
-                    
-                    {% if form.soilsampledate.errors %}
-                        {{ form.soilsampledate(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.soilsampledate.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.soilsampledate(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.depth.label(class="form-control-label") }}
-                    
-                    {% if form.depth.errors %}
-                        {{ form.depth(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.depth.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.depth(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.nitrogenlevel.label(class="form-control-label") }}
-                    
-                    {% if form.nitrogenlevel.errors %}
-                        {{ form.nitrogenlevel(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.nitrogenlevel.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.nitrogenlevel(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.organicmatterlevel.label(class="form-control-label") }}
-                    
-                    {% if form.organicmatterlevel.errors %}
-                        {{ form.organicmatterlevel(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.organicmatterlevel.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.organicmatterlevel(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.phosphoruslevel.label(class="form-control-label") }}
-                    
-                    {% if form.phosphoruslevel.errors %}
-                        {{ form.phosphoruslevel(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.phosphoruslevel.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.phosphoruslevel(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.potassiumlevel.label(class="form-control-label") }}
-                    
-                    {% if form.potassiumlevel.errors %}
-                        {{ form.potassiumlevel(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.potassiumlevel.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.potassiumlevel(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.soilmoisture.label(class="form-control-label") }}
-                    
-                    {% if form.soilmoisture.errors %}
-                        {{ form.soilmoisture(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.soilmoisture.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.soilmoisture(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                
+                <br>
+                {{ form.diseasesabnormalities.label(class="form-control-label", style="white-space: nowrap;") }}
+                {% if form.diseasesabnormalities.errors %}
+                    {{ form.diseasesabnormalities(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.diseasesabnormalities.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.diseasesabnormalities(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                {{ form.diseasesabnormalitiesdate.label(class="form-control-label", style="white-space: nowrap;") }}    
+                {% if form.diseasesabnormalitiesdate.errors %}
+                    {{ form.diseasesabnormalitiesdate(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.diseasesabnormalitiesdate.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.diseasesabnormalitiesdate(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                {{ form.treatmentobservation.label(class="form-control-label", style="white-space: nowrap;") }}    
+                {% if form.treatmentobservation.errors %}
+                    {{ form.treatmentobservation(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.treatmentobservation.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.treatmentobservation(class="form-control form-control-lg") }}
+                {% endif %}
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}

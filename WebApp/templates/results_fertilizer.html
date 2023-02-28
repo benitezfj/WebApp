@@ -23,7 +23,7 @@
 {% block content %}
     <div class="content-section">
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Calculate Posology</legend>
+            <legend class="border-bottom mb-4">Fertilizer Map</legend>
 
             <div class="form-group">
             	{{ form.farmland.label(class="form-control-label") }}
@@ -42,6 +42,8 @@
                 <div class="folium-map" id="Map" ></div>
             </div>
             
+            <div class="form-group">   
+            <legend class="border-bottom mb-4">Posology</legend>
             <div class="column">
             	<div class="row">
                     <table>
@@ -55,40 +57,40 @@
                         <tbody>
                           <tr>
                             <td rowspan="9">{{fertilizer_measure[0]}} Tones per ha</td>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][0]}}</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[1][0][0]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][1]}}</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[1][0][1]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
-                            <td bgcolor="#ff0000">{{fertilizer_measure[1][0][2]}}</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#027100">{{fertilizer_measure[1][0][2]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#fff400">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
-                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][0]}}</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[1][1][0]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#fff400">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
-                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][1]}}</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[1][1][1]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#fff400">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
-                            <td bgcolor="#fff400">{{fertilizer_measure[1][1][2]}}</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#88fa4d">{{fertilizer_measure[1][1][2]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][0]}}</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[2][0][0]}}- {{fertilizer_measure[2][0][1]}}- {{fertilizer_measure[2][0][2]}}-</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[1][2][0]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][1]}}</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[2][1][0]}}- {{fertilizer_measure[2][1][1]}}- {{fertilizer_measure[2][1][2]}}-</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[1][2][1]}}</td>
                           </tr>
                           <tr>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
-                            <td bgcolor="#2cba00">{{fertilizer_measure[1][2][2]}}</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[2][2][0]}}- {{fertilizer_measure[2][2][1]}}- {{fertilizer_measure[2][2][2]}}-</td>
+                            <td bgcolor="#f17200">{{fertilizer_measure[1][2][2]}}</td>
                           </tr>
                       </tbody>
                     </table>
@@ -148,6 +150,7 @@
                     </table>
             	</div>  
             </div> 
+            </div>
             
         </fieldset>    
         <script>
@@ -244,9 +247,9 @@
             legend.onAdd = function(Map) {
               var div = L.DomUtil.create("div", "legend");
               div.innerHTML += "<h4>Fertilizers</h4>";
-              div.innerHTML += '<i style="background: #ff0000"></i><span>High</span><br>';
-              div.innerHTML += '<i style="background: #fff400"></i><span>Medium</span><br>';
-              div.innerHTML += '<i style="background: #2cba00"></i><span>Low</span><br>';
+              div.innerHTML += '<i style="background: #027100"></i><span>High</span><br>';
+              div.innerHTML += '<i style="background: #88fa4d"></i><span>Medium</span><br>';
+              div.innerHTML += '<i style="background: #f27101"></i><span>Low</span><br>';
            /* div.innerHTML += '<i style="background: #E8E6E0"></i><span>Residential</span><br>'; */
            /* div.innerHTML += '<i style="background: #FFFFFF"></i><span>Ice</span><br>'; */
            /* div.innerHTML += '<i class="icon" style="background-image: url(https://d30y9cdsu7xlg0.cloudfront.net/png/194515-200.png);background-repeat: no-repeat;"></i><span>Grænse</span><br>'; */

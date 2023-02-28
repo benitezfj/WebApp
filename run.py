@@ -14,7 +14,7 @@ if __name__ == '__main__':
 # from WebApp import db, create_app
 # app = create_app()
 # app.app_context().push()
-# from WebApp.models import User, Role, Farmland, Crop, Historical, HistoricFarmland
+# from WebApp.models import User, Role, Crop, HistoricFarmland, SoilFarmland, Farmland
 # db.create_all()
 
 # Create three roles

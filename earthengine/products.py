@@ -124,9 +124,9 @@ EE_PRODUCTS = {
                 'vis_fertilizer': {'min': 1.1, 
                                    'max': 0.7,
                                    'palette': [
-                                        '#ff0000',
-                                        '#fff400',
-                                        '#2cba00'
+                                        '#027100',
+                                        '#88fa4d',
+                                        '#f27101'
                                    ]
                 },
                 'start_date': '2015-06-23',
@@ -159,9 +159,9 @@ EE_PRODUCTS = {
                 'vis_fertilizer': {'min': 1.1, 
                                    'max': 0.7,
                                    'palette': [
-                                        '#ff0000',
-                                        '#fff400',
-                                        '#2cba00'
+                                        '#027100',
+                                        '#88fa4d',
+                                        '#027100'
                                    ]
                 },
                 'start_date': '2017-03-28',

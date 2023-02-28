@@ -213,7 +213,7 @@ def get_image_collection_asset(platform, sensor, product, cloudy=None, date_from
             if cloud_mask_func:
                 ee_collection = ee_collection.map(cloud_mask_func)
         '''
-            
+        # ee_collection = ee_collection.add_colorbar(vis_params, label=index, layer_name="Index")     
         tile_url = image_to_map_id(ee_collection.select(index), vis_params)
 
         return tile_url, index, date_to

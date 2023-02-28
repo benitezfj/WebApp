@@ -19,7 +19,7 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     
     with app.app_context():
-        from WebApp.models import User, Role, Farmland, Crop, Historical
+        from WebApp.models import User, Role, Farmland, Crop, HistoricFarmland, SoilFarmland
         db.create_all()
     
     # app.config['SECRET_KEY'] = 'ec8466a71d3153c8f7adfb411dffdc47f7adfb411dffdc47'

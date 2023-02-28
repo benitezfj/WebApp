@@ -1,0 +1,274 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Soil Test</legend>
+                <div class="form-group">
+                    {{ form.current_farm.label(class="form-control-label") }}
+
+                    {% if form.current_farm.errors %} 
+                        {{ form.current_farm(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.current_farm.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.current_farm(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+                {{ form.soilsampledate.label(class="form-control-label", style="white-space: nowrap;") }}
+                {% if form.soilsampledate.errors %}
+                    {{ form.soilsampledate(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.soilsampledate.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.soilsampledate(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                {{ form.depth.label(class="form-control-label", style="white-space: nowrap;") }}                    
+                {% if form.depth.errors %}
+                    {{ form.depth(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.depth.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.depth(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                {{ form.organicmatterlevel.label(class="form-control-label", style="white-space: nowrap;") }}
+                {% if form.organicmatterlevel.errors %}
+                    {{ form.organicmatterlevel(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.organicmatterlevel.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.organicmatterlevel(class="form-control form-control-lg") }}
+                {% endif %}
+                <br>
+                <div class="input-group">
+                    {{ form.phosphorus_1.label(class="form-control-label") }}    
+                    {% if form.phosphorus_1.errors %}
+                        {{ form.phosphorus_1(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.phosphorus_1.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.phosphorus_1(class="form-control form-control-lg") }}
+                    {% endif %}
+                    
+                    {{ form.phosphorus_2.label(class="form-control-label") }}
+                    {% if form.phosphorus_2.errors %}
+                        {{ form.phosphorus_2(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.phosphorus_2.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.phosphorus_2(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <br>                
+                <div class="input-group">
+                    {{ form.potassium_1.label(class="form-control-label") }}
+                    {% if form.potassium_1.errors %}
+                        {{ form.potassium_1(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.potassium_1.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.potassium_1(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.potassium_2.label(class="form-control-label") }}
+                    {% if form.potassium_2.errors %}
+                        {{ form.potassium_2(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.potassium_2.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.potassium_2(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <br>
+                <div class="input-group">
+                    {{ form.calcium_1.label(class="form-control-label") }}
+                    {% if form.calcium_1.errors %}
+                        {{ form.calcium_1(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.calcium_1.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.calcium_1(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.calcium_2.label(class="form-control-label") }}
+                    {% if form.calcium_2.errors %}
+                        {{ form.calcium_2(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.calcium_2.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.calcium_2(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <br>
+                <div class="input-group">
+                    <br>
+                    <legend>Texture (%)</legend>
+                    <br>
+                    {{ form.sand.label(class="form-control-label") }}
+                    {% if form.sand.errors %}
+                        {{ form.sand(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sand.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sand(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.slit.label(class="form-control-label") }}
+                    {% if form.slit.errors %}
+                        {{ form.slit(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.slit.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.slit(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.clay.label(class="form-control-label") }}
+                    {% if form.clay.errors %}
+                        {{ form.clay(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.clay.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.clay(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <br>
+                <div class="input-group">
+                    {{ form.sulfur.label(class="form-control-label") }}
+                    {% if form.sulfur.errors %}
+                        {{ form.sulfur(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sulfur.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sulfur(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.magnesium.label(class="form-control-label") }}
+                    {% if form.magnesium.errors %}
+                        {{ form.magnesium(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.magnesium.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.magnesium(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.boron.label(class="form-control-label") }}
+                    {% if form.boron.errors %}
+                        {{ form.boron(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.boron.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.boron(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <br>
+                <div class="input-group">
+                    {{ form.copper.label(class="form-control-label") }}
+                    {% if form.copper.errors %}
+                        {{ form.copper(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.copper.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.copper(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.zinc.label(class="form-control-label") }}
+                    {% if form.zinc.errors %}
+                        {{ form.zinc(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.zinc.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.zinc(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.manganese.label(class="form-control-label") }}
+                    {% if form.manganese.errors %}
+                        {{ form.manganese(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.manganese.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.manganese(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+                
+                
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    /* var d = JSON.parse('{{documents | tojson | safe}}'); */
+    /* document.getElementById('feed').innerHTML = d.asd; */
+    
+    function Start(){
+      var coordinates_div = document.getElementById("coordinates");
+      coordinates_div.style.display = "none";
+    }
+  </script>
+{% endblock %}

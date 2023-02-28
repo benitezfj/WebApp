@@ -24,28 +24,29 @@
 {% block content %}
     <div class="content-section">
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Calculate indices</legend>
+            <legend class="border-bottom mb-4">Vegetation and Calculation Index</legend>
 
             
             <div class="form-group">
-            	{{ form.farmland.label(class="form-control-label") }}
+            	{{ form.farmland.label(class="form-control-label", style="white-space: nowrap;") }}
+            	<br>
             	<p class="form-control form-control-lg" type="text" id="farmland" disabled></p>
-            </div>
-            <div class="form-group">
-            	{{ form.indices.label(class="form-control-label") }}
+                <br>
+            	{{ form.indices.label(class="form-control-label", style="white-space: nowrap;") }}
+            	<br>
             	<p class="form-control form-control-lg" type="text" id="indices" disabled></p>
-            </div>
-            <div class="form-group">
-            	{{ form.index_date.label(class="form-control-label") }}
+                <br>
+                {{ form.index_date.label(class="form-control-label") }}
+            	<br>
+            	<label for="index_date" style="font-size: 13px; white-space: nowrap;">*closest available date to your initial selection:</label> 
+            	<br>
             	<p class="form-control form-control-lg" type="text" id="index_date" disabled></p>
-            </div>
-            <div class="form-group">
-            	<label class="form-control-label">Cloud Coverage (%)</label>
-            	<p class="form-control form-control-lg" type="text" id="cloud_cover" disabled></p>
-            </div>
-            
-            <div class="form-group">   
-                <div class="folium-map" id="Map" ></div>
+                <br>
+                <div class="form-group">   
+                    <label for="Map" style="font-size: 13px; white-space: nowrap;">Cloud coverage close to 60 percent</label>
+                    <br>
+                    <div class="folium-map" id="Map" ></div>
+                </div>
             </div>
             
         </fieldset>    
@@ -94,7 +95,7 @@
                 
             Map.fitBounds(
             	[[maps_config.latitude, maps_config.longitude], [maps_config.latitude, maps_config.longitude]],
-                    {"maxZoom": 12}
+                    {"maxZoom": 17}
             );
             
             var layer_control = {
@@ -149,7 +150,7 @@
             document.getElementById('farmland').innerText = maps_config.farmland_name;
             document.getElementById('indices').innerText = maps_config.index_name;
             document.getElementById('index_date').innerText = maps_config.indexdate;
-            document.getElementById('cloud_cover').innerText = maps_config.cover;
+           // document.getElementById('cloud_cover').innerText = maps_config.cover;
             
         </script>
     </div>    

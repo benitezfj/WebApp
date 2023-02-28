@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Sanzar Calculator</legend>
+                <div class="input-group">
+                    <legend style="font-size: 16px;">Please include the data of N, K and P if to obtain the optimized commercial combination</legend>
+                    {{ form.nitrogen.label(class="form-control-label") }}
+                    {% if form.nitrogen.errors %} 
+                        {{ form.nitrogen(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.nitrogen.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.nitrogen(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                    {{ form.phosphorus.label(class="form-control-label") }}
+                    {% if form.phosphorus.errors %} 
+                        {{ form.phosphorus(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.phosphorus.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.phosphorus(class="form-control form-control-lg") }}
+                    {% endif %}
+
+                    {{ form.potassium.label(class="form-control-label") }}
+                    {% if form.potassium.errors %} 
+                        {{ form.potassium(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.potassium.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.potassium(class="form-control form-control-lg") }}
+                    {% endif %}
+                
+                </div>                
+                
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+{% endblock content %}
