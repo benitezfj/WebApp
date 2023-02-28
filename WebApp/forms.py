@@ -215,6 +215,7 @@ class SoilForm(FlaskForm):
     depth = FloatField('Sampling Depth (cm)', validators=[Optional()], default=0)
     organicmatterlevel = FloatField('Organic Matter o N (%)', validators=[Optional()], default=0)
     phosphorus_1 = FloatField('P (ppm)', validators=[Optional()], default=0)
+    # phosphorus_2 = SelectField('P', coerce=int, validators=[Optional()])
     phosphorus_2 = FloatField('P (mg/dm3)', validators=[Optional()], default=0)
     potassium_1 = FloatField('K (cmolc/dm3)', validators=[Optional()], default=0)
     potassium_2 = FloatField('K (mg/dm3)', validators=[Optional()], default=0)

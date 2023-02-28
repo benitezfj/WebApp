@@ -6,8 +6,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Vegetation and Calculation Index</legend>
                 <div class="form-group">
-                    {{ form.farmland.label(class="form-control-label") }}
-
+                    {{ form.farmland.label(class="form-control-label", style="white-space: nowrap;") }}
                     {% if form.farmland.errors %} 
                         {{ form.farmland(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -21,8 +20,7 @@
                 </div>
                 
                 <div class="form-group">
-                    {{ form.indices.label(class="form-control-label") }}
-
+                    {{ form.indices.label(class="form-control-label", style="white-space: nowrap;") }}
                     {% if form.indices.errors %} 
                         {{ form.indices(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -36,8 +34,7 @@
                 </div>
 
                 <div class="form-group">
-                    {{ form.index_date.label(class="form-control-label") }}
-
+                    {{ form.index_date.label(class="form-control-label", style="white-space: nowrap;") }}
                     {% if form.index_date.errors %} 
                         {{ form.index_date(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">

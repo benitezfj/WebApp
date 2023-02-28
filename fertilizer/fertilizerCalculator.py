@@ -41,7 +41,7 @@ def fertilizerCalculator(n, p, k, db):
 
     #Call calculateBlend_v3 Matlab function
     fert, diff = eng.calculateBlend(n, p, k, db, nargout=2)
-    
+    print('End matlab engine API')
     return fert, diff
 
 #fertilizerCalculator_v2(n=20.0, p=15.0, k=30.0, db=2)

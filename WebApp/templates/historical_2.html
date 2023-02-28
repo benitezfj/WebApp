@@ -6,8 +6,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Historic Farmland Register</legend>
                 <div class="form-group">
-                    {{ form.current_farm.label(class="form-control-label") }}
-
+                    {{ form.current_farm.label(class="form-control-label", style="white-space: nowrap;") }}
                     {% if form.current_farm.errors %} 
                         {{ form.current_farm(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">

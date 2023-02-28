@@ -68,8 +68,8 @@
               {% endif %}
             </div>
             <!-- Navbar Right Side -->
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+            <div class="dropdown"> 
+                <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i></button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if current_user.is_authenticated %}
                         <a class="dropdown-item" href="{{ url_for('main.registerrole') }}">Role</a>
@@ -92,6 +92,8 @@
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-12">
+        <img alt="logo" src="{{ url_for('static', filename='media/Sanzar_Azul.png') }}" style="position:fixed; width:250px; bottom:485px; right:1350px;"/>
+        
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
