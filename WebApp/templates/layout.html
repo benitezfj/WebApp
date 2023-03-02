@@ -52,14 +52,14 @@
             <div class="navbar-nav mr-auto">
               {% if current_user.is_authenticated %}
                   <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true">Farmland</button>
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true">Farmland Data</button>
                       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" href="{{ url_for('main.land_selection') }}">Farmland List</a>
                         <li><a class="dropdown-item" href="{{ url_for('main.insert_farmland_data') }}">New Farmland</a>
+                        <li><a class="dropdown-item" href="{{ url_for('main.insert_soiltest') }}">Soil Test</a>
+                        <li><a class="dropdown-item" href="{{ url_for('main.insert_historical_data') }}">Historical Data</a>
                        </ul>
                   </div>
-                  <a class="nav-item nav-link" href="{{ url_for('main.insert_soiltest') }}">Soil Test</a>
-                  <a class="nav-item nav-link" href="{{ url_for('main.insert_historical_data') }}">Historical Data</a>
                   <a class="nav-item nav-link" href="{{ url_for('main.fertilizer_maps') }}">Fertilization Map</a>
                   <a class="nav-item nav-link" href="{{ url_for('main.maps') }}">Vegetation Index</a>
                   <a class="nav-item nav-link" href="{{ url_for('main.calculator') }}">Calculator</a>

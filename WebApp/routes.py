@@ -1,8 +1,8 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from WebApp import db, bcrypt
-from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, RegistrationCropForm, FertilizarMapForm, InsertHistoricalForm, SoilForm, InsertFullForm, CalculatorForm #, HistoricalForm, InsertFarmlandForm
-from WebApp.models import User, Role, Farmland, Crop, HistoricFarmland, SoilFarmland
+from WebApp.forms import RegistrationForm, LoginForm, RegistrationRoleForm, MapForm, RegistrationCropForm, FertilizarMapForm, InsertHistoricalForm, SoilForm, InsertFarmlandForm, CalculatorForm #, HistoricalForm, InsertFullForm 
+from WebApp.models import User, Role, Farmland, Crop, HistoricFarmland, SoilFarmland, Unit
 from fertilizer.calculator_spinach import spinachFertilizer
 from fertilizer.fertilizerCalculator import fertilizerCalculator
 from earthengine.methods import get_image_collection_asset, get_fertilizer_map
@@ -347,19 +347,23 @@ def insert_soiltest():
     form = SoilForm()
     # https://stackoverflow.com/questions/27451693/display-two-fields-side-by-side-in-a-bootstrap-form
     form.current_farm.choices = [(f.id, f.name) for f in Farmland.query.order_by(Farmland.name).filter(Farmland.harvest_date > dt.date(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day)).all()]
+    form.phosphorus_unit.choices = [(c.id, c.description) for c in Unit.query.order_by(Unit.description).all()]
+    form.potassium_unit.choices = [(c.id, c.description) for c in Unit.query.order_by(Unit.description).all()]
+    form.calcium_unit.choices = [(c.id, c.description) for c in Unit.query.order_by(Unit.description).all()]
     if form.validate_on_submit():
         # current_farm    = Farmland.query.get_or_404(form.current_farm.data)
         
         print(form.current_farm.data,
+              form.name.data, 
               form.soilsampledate.data, 
               form.depth.data,
               form.organicmatterlevel.data, 
-              form.phosphorus_1.data,
-              form.phosphorus_2.data,
-              form.potassium_1.data,
-              form.potassium_2.data,
-              form.calcium_1.data,
-              form.calcium_2.data,
+              form.phosphorus.data,
+              form.phosphorus_unit.data,
+              form.potassium.data,
+              form.potassium_unit.data,
+              form.calcium.data,
+              form.calcium_unit.data,
               form.sand.data,
               form.slit.data,
               form.clay.data,
@@ -370,32 +374,80 @@ def insert_soiltest():
               form.zinc.data,
               form.manganese.data)
 
-        soil = SoilFarmland(current_farm_id = form.current_farm.data,
-                                soil_date = form.soilsampledate.data,
-                                soil_depth = form.depth.data,
-                                soil_organic_level = form.organicmatterlevel.data,
-                                phosphorus_ppm = form.phosphorus_1.data,
-                                phosphorus_mg = form.phosphorus_2.data,
-                                potassium_cmolc = form.potassium_1.data,
-                                potassium_mg = form.potassium_2.data,
-                                calcium_cmolc = form.calcium_1.data,
-                                calcium_mg = form.calcium_2.data,
-                                sand = form.sand.data,
-                                slit = form.slit.data,
-                                clay = form.clay.data,
-                                sulfur = form.sulfur.data,
-                                magnesium = form.magnesium.data,
-                                boron = form.boron.data,
-                                copper = form.copper.data,
-                                zinc = form.zinc.data,
-                                manganese = form.manganese.data)
+        # soil = SoilFarmland(current_farm_id = form.current_farm.data,
+        #                     soil_date = form.soilsampledate.data,
+        #                     soil_depth = form.depth.data,
+        #                     soil_organic_level = form.organicmatterlevel.data,
+        #                     phosphorus = form.phosphorus.data,
+        #                     phosphorus_unit_id = form.phosphorus_unit.data,
+        #                     potassium = form.potassium.data,
+        #                     potassium_unit_id = form.potassium_unit.data,
+        #                     calcium = form.calcium.data,
+        #                     calcium_unit_id = form.calcium_unit.data,
+        #                     sand = form.sand.data,
+        #                     slit = form.slit.data,
+        #                     clay = form.clay.data,
+        #                     sulfur = form.sulfur.data,
+        #                     magnesium = form.magnesium.data,
+        #                     boron = form.boron.data,
+        #                     copper = form.copper.data,
+        #                     zinc = form.zinc.data,
+        #                     manganese = form.manganese.data)
 
-        db.session.add(soil)
-        db.session.commit()
-        flash('A New Soil Test was assigned to a current farmland.', 'success')
-        return redirect(url_for('main.login'))
+        # db.session.add(soil)
+        # db.session.commit()
+        # flash('A New Soil Test was assigned to a current farmland.', 'success')
+        # return redirect(url_for('main.login'))
     return render_template('soiltest.html', title='Soil Test', form=form)
 
+
+
+@main.route("/newfarmland", methods=['GET', 'POST'])
+@login_required
+def insert_farmland_data():
+    form = InsertFarmlandForm()
+    crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
+    form.croptype.choices = crops
+    # print(form.validate_on_submit())
+    # print(request.get_json())
+    # print((form.form_errors))
+    # print(form.errors)
+    # if form.is_submitted():
+    #     print("submitted")
+    # if form.validate():
+    #     print("valid")
+    # print(form.errors)
+    # print(form.name.errors)
+    if form.validate_on_submit(): 
+        request_data = request.get_json()
+        print("Test")
+        descrip = request_data.get('name')
+        crop = int(request_data.get('croptype'))
+        coord = request_data.get('coordinates').replace("[","").replace("]","").replace("\n","").replace(" ","")
+        sow = dt.datetime.strptime(request_data.get('sowdate'), '%Y-%m-%d').date()
+        harvest = dt.datetime.strptime(request_data.get('harvestdate'), '%Y-%m-%d').date()
+        product_expected = float(request_data.get('productexpected'))
+        
+        print(request.method)
+        
+        print(descrip, 
+    	      crop, 
+              coord,
+    	      sow, 
+    	      harvest, 
+    	      product_expected)
+        crop = Farmland(name = descrip,
+                        croptype_id = crop,
+                        sow_date = sow,
+                        harvest_date = harvest,
+                        product_expected = product_expected,
+                        coordinates = coord)
+        db.session.add(crop)
+        db.session.commit()
+
+        flash('A New Crop Field has been Registered', 'success')
+        return redirect(url_for('main.login'))
+    return render_template('crop3.html', title='Insert a New Crop Field', form=form)
 
 # @main.route("/farmland", methods=['GET', 'POST'])
 # @login_required
@@ -444,145 +496,145 @@ def insert_soiltest():
 # Verficar valores devueltos por js in crop2
 # https://stackoverflow.com/questions/38664088/flask-404-for-post-request
 # Test
-@main.route("/newfarmland", methods=['GET', 'POST'])
-@login_required
-def insert_farmland_data():
-    form = InsertFullForm()
-    crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
-    form.croptype.choices = crops
-    form.croptype1.choices = crops
+# @main.route("/newfarmland", methods=['GET', 'POST'])
+# @login_required
+# def insert_farmland_data():
+#     form = InsertFullForm()
+#     crops = [(c.id, c.description) for c in Crop.query.order_by(Crop.description).all()]
+#     form.croptype.choices = crops
+#     form.croptype1.choices = crops
 
-    # print(form.validate_on_submit())
-    # print(request.get_json())
-    # print((form.form_errors))
-    # print(form.errors)
-    # if form.is_submitted():
-    #     print("submitted")
-    # if form.validate():
-    #     print("valid")
-    # print(form.errors)
-    # print(form.name.errors)
-    if form.validate_on_submit(): 
-        request_data = request.get_json()
-        print("Test")
-        descrip = request_data.get('name')
-        crop = int(request_data.get('croptype'))
-        coord = request_data.get('coordinates').replace("[","").replace("]","").replace("\n","").replace(" ","")
-        sow = dt.datetime.strptime(request_data.get('sowdate'), '%Y-%m-%d').date()
-        harvest = dt.datetime.strptime(request_data.get('harvestdate'), '%Y-%m-%d').date()
-        product_expected = float(request_data.get('productexpected'))
+#     # print(form.validate_on_submit())
+#     # print(request.get_json())
+#     # print((form.form_errors))
+#     # print(form.errors)
+#     # if form.is_submitted():
+#     #     print("submitted")
+#     # if form.validate():
+#     #     print("valid")
+#     # print(form.errors)
+#     # print(form.name.errors)
+#     if form.validate_on_submit(): 
+#         request_data = request.get_json()
+#         print("Test")
+#         descrip = request_data.get('name')
+#         crop = int(request_data.get('croptype'))
+#         coord = request_data.get('coordinates').replace("[","").replace("]","").replace("\n","").replace(" ","")
+#         sow = dt.datetime.strptime(request_data.get('sowdate'), '%Y-%m-%d').date()
+#         harvest = dt.datetime.strptime(request_data.get('harvestdate'), '%Y-%m-%d').date()
+#         product_expected = float(request_data.get('productexpected'))
         
         
-        print(request.method)
+#         print(request.method)
         
-        historic_flag = request_data.get('historic')
-        soil_flag = request_data.get('soil')
+#         historic_flag = request_data.get('historic')
+#         soil_flag = request_data.get('soil')
         
-        print(historic_flag,soil_flag)
+#         print(historic_flag,soil_flag)
         
-        print(descrip,crop,sow,harvest,coord,product_expected)
-        crop = Farmland(name = descrip,
-                        croptype_id = crop,
-                        sow_date = sow,
-                        harvest_date = harvest,
-                        product_expected = product_expected,
-                        coordinates = coord)
-        db.session.add(crop)
-        db.session.commit()
-        # crop.id
+#         print(descrip,crop,sow,harvest,coord,product_expected)
+#         crop = Farmland(name = descrip,
+#                         croptype_id = crop,
+#                         sow_date = sow,
+#                         harvest_date = harvest,
+#                         product_expected = product_expected,
+#                         coordinates = coord)
+#         db.session.add(crop)
+#         db.session.commit()
+#         # crop.id
         
-        if(historic_flag=="Yes"):
-            # farm_id = crop.id
-            croptype1 = int(request_data.get('croptype'))
-            sowdate1 = dt.datetime.strptime(request_data.get('sowdate1'), '%Y-%m-%d').date()
-            harvestdate1 = dt.datetime.strptime(request_data.get('harvestdate1'), '%Y-%m-%d').date()
-            product_obtained = float(request_data.get('productobtained'))
-            nitrogen1 = float(request_data.get('nitrogen1'))
-            phosphorus1 = float(request_data.get('phosphorus1'))
-            potassium1 = float(request_data.get('potassium1'))
-            posology1 = float(request_data.get('posology1'))
-            nitrogen2 = float(request_data.get('nitrogen2'))
-            phosphorus2 = float(request_data.get('phosphorus2'))
-            potassium2 = float(request_data.get('potassium2'))
-            posology2 = float(request_data.get('productobtained'))
-            nitrogen3 = float(request_data.get('posology2'))
-            phosphorus3 = float(request_data.get('phosphorus3'))
-            potassium3 = float(request_data.get('potassium3'))
-            posology3 = float(request_data.get('posology3'))
-            diseasesabnormalities = str(request_data.get('diseasesabnormalities'))
-            diseasesabnormalitiesdate = dt.datetime.strptime(request_data.get('diseasesabnormalitiesdate'), '%Y-%m-%d').date()
-            treatmentobservation = str(request_data.get('treatmentobservation'))
+#         if(historic_flag=="Yes"):
+#             # farm_id = crop.id
+#             croptype1 = int(request_data.get('croptype'))
+#             sowdate1 = dt.datetime.strptime(request_data.get('sowdate1'), '%Y-%m-%d').date()
+#             harvestdate1 = dt.datetime.strptime(request_data.get('harvestdate1'), '%Y-%m-%d').date()
+#             product_obtained = float(request_data.get('productobtained'))
+#             nitrogen1 = float(request_data.get('nitrogen1'))
+#             phosphorus1 = float(request_data.get('phosphorus1'))
+#             potassium1 = float(request_data.get('potassium1'))
+#             posology1 = float(request_data.get('posology1'))
+#             nitrogen2 = float(request_data.get('nitrogen2'))
+#             phosphorus2 = float(request_data.get('phosphorus2'))
+#             potassium2 = float(request_data.get('potassium2'))
+#             posology2 = float(request_data.get('productobtained'))
+#             nitrogen3 = float(request_data.get('posology2'))
+#             phosphorus3 = float(request_data.get('phosphorus3'))
+#             potassium3 = float(request_data.get('potassium3'))
+#             posology3 = float(request_data.get('posology3'))
+#             diseasesabnormalities = str(request_data.get('diseasesabnormalities'))
+#             diseasesabnormalitiesdate = dt.datetime.strptime(request_data.get('diseasesabnormalitiesdate'), '%Y-%m-%d').date()
+#             treatmentobservation = str(request_data.get('treatmentobservation'))
             
-            print(crop.id,croptype1,sowdate1,harvestdate1,product_obtained,nitrogen1,phosphorus1,potassium1,posology1,nitrogen2,phosphorus2,potassium2,posology2,nitrogen3,phosphorus3,potassium3,posology3,diseasesabnormalities,diseasesabnormalitiesdate,treatmentobservation)
-            hist = HistoricFarmland(current_farm_id = crop.id,
-                    		croptype_id = croptype1,
-                    		sow_date = sowdate1,
-                    		harvest_date = harvestdate1,
-                    		product_obtained = product_obtained,
-                    		nitrogen_type1 = nitrogen1,
-                    		phosphorus_type1 = phosphorus1,
-                    		potassium_type1 = potassium1,
-                    		posology_type1 = posology1,
-                    		nitrogen_type2 = nitrogen2,
-                    		phosphorus_type2 = phosphorus2,
-                    		potassium_type2 = potassium2,
-                    		posology_type2 = posology2,
-                    		nitrogen_type3 = nitrogen3,
-                    		phosphorus_type3 = phosphorus3,
-                    		potassium_type3 = potassium3,
-                    		posology_type3 = posology3,
-                    		diseases_abnormalities = diseasesabnormalities,
-                    		diseases_abnormalitiesdate = diseasesabnormalitiesdate,
-                    		observation = treatmentobservation)
-            db.session.add(hist)
-            db.session.commit()
-        if(soil_flag=="Yes"):
-            # farm_id = 1
-            soilsampledate = dt.datetime.strptime(request_data.get('soilsampledate'), '%Y-%m-%d').date()
-            depth = float(request_data.get('depth'))
-            organicmatterlevel = float(request_data.get('organicmatterlevel'))
-            phosphorus_1 = float(request_data.get('phosphorus_1'))
-            phosphorus_2 = float(request_data.get('productobtained'))
-            potassium_1 = float(request_data.get('phosphorus_2'))
-            potassium_2 = float(request_data.get('potassium_2'))
-            calcium_1 = float(request_data.get('calcium_1'))
-            calcium_2 = float(request_data.get('calcium_2'))
-            sand = float(request_data.get('sand'))
-            slit = float(request_data.get('slit'))
-            clay = float(request_data.get('clay'))
-            sulfur = float(request_data.get('sulfur'))
-            magnesium = float(request_data.get('magnesium'))
-            boron = float(request_data.get('boron'))
-            copper = float(request_data.get('copper'))
-            zinc = float(request_data.get('zinc'))
-            manganese = float(request_data.get('manganese'))
+#             print(crop.id,croptype1,sowdate1,harvestdate1,product_obtained,nitrogen1,phosphorus1,potassium1,posology1,nitrogen2,phosphorus2,potassium2,posology2,nitrogen3,phosphorus3,potassium3,posology3,diseasesabnormalities,diseasesabnormalitiesdate,treatmentobservation)
+#             hist = HistoricFarmland(current_farm_id = crop.id,
+#                     		croptype_id = croptype1,
+#                     		sow_date = sowdate1,
+#                     		harvest_date = harvestdate1,
+#                     		product_obtained = product_obtained,
+#                     		nitrogen_type1 = nitrogen1,
+#                     		phosphorus_type1 = phosphorus1,
+#                     		potassium_type1 = potassium1,
+#                     		posology_type1 = posology1,
+#                     		nitrogen_type2 = nitrogen2,
+#                     		phosphorus_type2 = phosphorus2,
+#                     		potassium_type2 = potassium2,
+#                     		posology_type2 = posology2,
+#                     		nitrogen_type3 = nitrogen3,
+#                     		phosphorus_type3 = phosphorus3,
+#                     		potassium_type3 = potassium3,
+#                     		posology_type3 = posology3,
+#                     		diseases_abnormalities = diseasesabnormalities,
+#                     		diseases_abnormalitiesdate = diseasesabnormalitiesdate,
+#                     		observation = treatmentobservation)
+#             db.session.add(hist)
+#             db.session.commit()
+#         if(soil_flag=="Yes"):
+#             # farm_id = 1
+#             soilsampledate = dt.datetime.strptime(request_data.get('soilsampledate'), '%Y-%m-%d').date()
+#             depth = float(request_data.get('depth'))
+#             organicmatterlevel = float(request_data.get('organicmatterlevel'))
+#             phosphorus_1 = float(request_data.get('phosphorus_1'))
+#             phosphorus_2 = float(request_data.get('productobtained'))
+#             potassium_1 = float(request_data.get('phosphorus_2'))
+#             potassium_2 = float(request_data.get('potassium_2'))
+#             calcium_1 = float(request_data.get('calcium_1'))
+#             calcium_2 = float(request_data.get('calcium_2'))
+#             sand = float(request_data.get('sand'))
+#             slit = float(request_data.get('slit'))
+#             clay = float(request_data.get('clay'))
+#             sulfur = float(request_data.get('sulfur'))
+#             magnesium = float(request_data.get('magnesium'))
+#             boron = float(request_data.get('boron'))
+#             copper = float(request_data.get('copper'))
+#             zinc = float(request_data.get('zinc'))
+#             manganese = float(request_data.get('manganese'))
             
-            print(crop.id, soilsampledate,depth,organicmatterlevel,phosphorus_1,phosphorus_2,potassium_1,potassium_2,calcium_1,calcium_2,sand,slit,clay,sulfur,magnesium,boron,copper,zinc,manganese)
-            soiltest = SoilFarmland(current_farm_id = crop.id,
-                                    soil_date = soilsampledate,
-                                    soil_depth = depth,
-                                    soil_organic_level = organicmatterlevel,
-                                    phosphorus_ppm = phosphorus_1,
-                                    phosphorus_mg = phosphorus_2,
-                                    potassium_cmolc = potassium_1,
-                                    potassium_mg = potassium_2,
-                                    calcium_cmolc = calcium_1,
-                                    calcium_mg = calcium_2,
-                                    sand = sand,
-                                    slit = slit,
-                                    clay = clay,
-                                    sulfur = sulfur,
-                                    magnesium = magnesium,
-                                    boron = boron,
-                                    copper = copper,
-                                    zinc = zinc,
-                                    manganese = manganese)
-            db.session.add(soiltest)
-            db.session.commit()
+#             print(crop.id, soilsampledate,depth,organicmatterlevel,phosphorus_1,phosphorus_2,potassium_1,potassium_2,calcium_1,calcium_2,sand,slit,clay,sulfur,magnesium,boron,copper,zinc,manganese)
+#             soiltest = SoilFarmland(current_farm_id = crop.id,
+#                                     soil_date = soilsampledate,
+#                                     soil_depth = depth,
+#                                     soil_organic_level = organicmatterlevel,
+#                                     phosphorus_ppm = phosphorus_1,
+#                                     phosphorus_mg = phosphorus_2,
+#                                     potassium_cmolc = potassium_1,
+#                                     potassium_mg = potassium_2,
+#                                     calcium_cmolc = calcium_1,
+#                                     calcium_mg = calcium_2,
+#                                     sand = sand,
+#                                     slit = slit,
+#                                     clay = clay,
+#                                     sulfur = sulfur,
+#                                     magnesium = magnesium,
+#                                     boron = boron,
+#                                     copper = copper,
+#                                     zinc = zinc,
+#                                     manganese = manganese)
+#             db.session.add(soiltest)
+#             db.session.commit()
             
-        flash('A New Crop Field has been Registered', 'success')
-        return redirect(url_for('main.login'))
-    return render_template('crop2.html', title='Insert a New Crop Field', form=form)
+#         flash('A New Crop Field has been Registered', 'success')
+#         return redirect(url_for('main.login'))
+#     return render_template('crop2.html', title='Insert a New Crop Field', form=form)
 
 
 

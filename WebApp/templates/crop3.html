@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <style type="text/css">
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        #Map {
+          position: relative;
+          width: 50.0%;
+          height: 65.0%;
+          left: 0.0%;
+          top: 0.0%;
+        }
+
+    </style>
+              
+{% endblock %}
+
+{% block content %}
+    <div class="content-section">
+        <form id="form" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Register a New Crop Field</legend>
+                <div class="form-group">
+                    {{ form.name.label(class="form-control-label", style="white-space: nowrap;") }}
+                    {% if form.name.errors %} 
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.croptype.label(class="form-control-label") }}
+                    {% if form.croptype.errors %} 
+                        {{ form.croptype(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.croptype.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.croptype(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">   
+                
+                    Please select your crop field in the map using polygon tool
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pentagon-fill" viewBox="0 0 16 16">
+                      <path d="M7.685.256a.5.5 0 0 1 .63 0l7.421 6.03a.5.5 0 0 1 .162.538l-2.788 8.827a.5.5 0 0 1-.476.349H3.366a.5.5 0 0 1-.476-.35L.102 6.825a.5.5 0 0 1 .162-.538l7.42-6.03Z"/>
+                    </svg>
+                    <br>
+                    <div class="folium-map" id="Map" ></div>
+                </div>             
+                <div class="form-group">
+                    {{ form.sowdate.label(class="form-control-label") }}
+                    {% if form.sowdate.errors %}
+                        {{ form.sowdate(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sowdate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sowdate(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.harvestdate.label(class="form-control-label") }}
+                    {% if form.harvestdate.errors %}
+                        {{ form.harvestdate(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.harvestdate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.harvestdate(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.productexpected.label(class="form-control-label", style="white-space: nowrap;") }}
+                    {% if form.productexpected.errors %}
+                        {{ form.productexpected(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.productexpected.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.productexpected(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info", id="submit") }}
+            </div>
+
+        </form>
+        <div class="form-group">
+            <a class="btn btn-outline-info" href="{{ url_for('main.insert_soiltest') }}" id="buttonsoil" role="button" >Register a Soil Test</a>
+            <a class="btn btn-outline-info" href="{{ url_for('main.insert_historical_data') }}" id="buttonhistoric" role="button" >Register a Historic Data</a>
+        </div>        
+        <script>
+            
+            const formEl = document.getElementById('form');
+            
+            var Map = L.map("Map");
+              
+            var tile_layer_openstreetmap = L.tileLayer(
+            	"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 30, "maxZoom": 30, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(Map);
+              
+            var tile_layer_google_maps = L.tileLayer(
+            	"https://mt1.google.com/vt/lyrs=m\u0026x={x}\u0026y={y}\u0026z={z}",{
+                    "attribution": "Google", 
+                    "detectRetina": false, 
+                    "maxNativeZoom": 22, 
+                    "maxZoom": 22, 
+                    "minZoom": 0, 
+                    "noWrap": false, 
+                    "opacity": 1, 
+                    "subdomains": "abc", 
+                    "tms": false}
+            ).addTo(Map);
+              
+            var tile_layer_google_satellite = L.tileLayer(
+            	"https://mt1.google.com/vt/lyrs=y\u0026x={x}\u0026y={y}\u0026z={z}",{
+                    "attribution": "Google", 
+                    "detectRetina": false, 
+                    "maxNativeZoom": 22, 
+                    "maxZoom": 22, 
+                    "minZoom": 0, 
+                    "noWrap": false, 
+                    "opacity": 1, 
+                    "subdomains": "abc", 
+                    "tms": false}
+            ).addTo(Map);
+              
+            L.Control.geocoder({"collapsed": true, "defaultMarkGeocode": true, "position": "topleft"}).on('markgeocode', function(e) {
+                            Map.setView(e.geocode.center, 11);
+                        }).addTo(Map);
+                        
+            //[lat, lon]
+            Map.fitBounds(
+            	[[-24, -55], [-24, -55]],
+                    {"maxZoom": 6}
+            );
+              
+            var layer_control = {
+            	base_layers : {
+            		"openstreetmap" : tile_layer_openstreetmap,
+                },
+                overlays : {
+                    "Google Maps" : tile_layer_google_maps,
+                    "Google Satellite" : tile_layer_google_satellite,
+                },
+            };
+              
+            L.control.layers(
+            	layer_control.base_layers,
+                    layer_control.overlays,
+                    {"autoZIndex": true, "collapsed": true, "position": "topright"}
+            ).addTo(Map);
+                        
+            var options = {
+            	position: "topleft",
+                    draw: {
+                        polygon : true,
+                        polyline : false,
+                        rectangle : false,     // Rectangles disabled
+                        circle : false,        // Circles disabled 
+                        circlemarker : false,  // Circle markers disabled
+                        marker: false
+                    },
+                    edit: {},
+            }
+                        
+            var drawnItems = new L.featureGroup().addTo(Map);
+            options.edit.featureGroup = drawnItems;
+            var draw_control = new L.Control.Draw(options).addTo(Map);
+            
+            Map.on(L.Draw.Event.CREATED, function(e) {
+                            		var layer = e.layer,
+                                		    type = e.layerType;
+                            		var coords = JSON.stringify(layer.toGeoJSON());
+                            		layer.on('click', function() {
+                                				alert(coords);
+                                				console.log(coords);
+                            		});
+                            		drawnItems.addLayer(layer);
+            });
+            
+            Map.on('draw:created', function(e) {
+            	drawnItems.addLayer(e.layer);
+            });      
+            
+            formEl.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                var coord = drawnItems.toGeoJSON();
+                try{
+                   coord.features[0].geometry.coordinates;
+                }catch(e){
+                   alert("Define a coordinate with the polygon tool");
+                   console.log(coord.features[0].geometry.coordinates,e);
+                }
+                
+                var coord_geojson = JSON.stringify(coord.features[0].geometry.coordinates, undefined, 2);
+                
+                const formData = new FormData(formEl);
+                formData.append('coordinates', coord_geojson);
+                const data = Object.fromEntries(formData.entries());
+                
+                console.log(JSON.stringify(data));
+                fetch('/newfarmland', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data),
+                });
+            });
+          
+        </script>
+
+    </div>    
+
+{% endblock %}

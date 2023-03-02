@@ -66,15 +66,16 @@ class SoilFarmland(db.Model):
     __tablename__ = 'soilfarmlands'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     current_farm_id = db.Column(db.Integer, db.ForeignKey('farmlands.id'))
+    # name = db.Column(db.String(50), unique=True, nullable=False)
     soil_date = db.Column(db.Date)
     soil_depth = db.Column(db.Float)
     soil_organic_level = db.Column(db.Float)
-    phosphorus_ppm = db.Column(db.Float)
-    phosphorus_mg = db.Column(db.Float)
-    potassium_cmolc = db.Column(db.Float)
-    potassium_mg = db.Column(db.Float)
-    calcium_cmolc = db.Column(db.Float)
-    calcium_mg = db.Column(db.Float)
+    phosphorus = db.Column(db.Float)
+    potassium = db.Column(db.Float)
+    calcium = db.Column(db.Float)
+    phosphorus_unit_id = db.Column(db.Integer, db.ForeignKey('units.id'), nullable=False)
+    potassium_unit_id = db.Column(db.Integer, db.ForeignKey('units.id'), nullable=False)
+    calcium_unit_id = db.Column(db.Integer, db.ForeignKey('units.id'), nullable=False)
     sand = db.Column(db.Float)
     slit = db.Column(db.Float)
     clay = db.Column(db.Float)
@@ -88,7 +89,18 @@ class SoilFarmland(db.Model):
     def __repr__(self):
         return f"SoilFarmland('{self.current_farm_id}', '{self.soil_date}', '{self.soil_depth}', '{self.soil_organic_level}', '{self.phosphorus_ppm}', '{self.phosphorus_mg}', '{self.potassium_cmolc}', '{self.potassium_mg}', '{self.calcium_cmolc}', '{self.calcium_mg}', '{self.sand}', '{self.slit}', '{self.clay}', '{self.sulfur}', '{self.magnesium}', '{self.boron}', '{self.copper}', '{self.zinc}', '{self.manganese}')"
 
-
+class Unit(db.Model):
+    __tablename__ = 'units'
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(20), unique=True, nullable=False)
+    soilfarmland_phosphorus = db.relationship('SoilFarmland', foreign_keys=[SoilFarmland.phosphorus_unit_id], backref=db.backref('phosphorus_unit', lazy='joined'), lazy=True)
+    soilfarmland_potassium = db.relationship('SoilFarmland', foreign_keys=[SoilFarmland.potassium_unit_id],  backref=db.backref('potassium_unit', lazy='joined'), lazy=True)
+    soilfarmland_calcium = db.relationship('SoilFarmland', foreign_keys=[SoilFarmland.calcium_unit_id],    backref=db.backref('calcium_unit', lazy='joined'), lazy=True)
+    
+    
+    def __repr__(self):
+        return f"Unit('{self.description}')"
+    
     
 class Farmland(db.Model):
     __tablename__ = 'farmlands'

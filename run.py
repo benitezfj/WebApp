@@ -14,7 +14,7 @@ if __name__ == '__main__':
 # from WebApp import db, create_app
 # app = create_app()
 # app.app_context().push()
-# from WebApp.models import User, Role, Crop, HistoricFarmland, SoilFarmland, Farmland
+# from WebApp.models import User, Role, HistoricFarmland, SoilFarmland, Unit, Farmland, Crop
 # db.create_all()
 
 # Create three roles
@@ -53,6 +53,17 @@ if __name__ == '__main__':
 # db.session.commit()
 # Crop.query.all()
 # crop = Crop.query.get(1)
+
+# Create three unit
+# unit_1 = Unit(description = 'ppm')
+# unit_2 = Unit(description = 'mg/dm3')
+# unit_3 = Unit(description = 'cmolc/dm3')
+
+# db.session.add(unit_1)
+# db.session.add(unit_2)
+# db.session.add(unit_3)
+# db.session.commit()
+
 
 # Create a farmland
 # cropfiel_1 =  Farmland(croptype_id = 1, sow_date = datetime.date(2022, 12, 1), harvest_date = datetime.date(2023, 12, 1), product_expected =  float(123.45))

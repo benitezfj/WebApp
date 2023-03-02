@@ -6,7 +6,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Soil Test</legend>
                 <div class="form-group">
-                    {{ form.current_farm.label(class="form-control-label", style="white-space: nowrap;") }}
+                    {{ form.current_farm.label(class="form-control-label", style="white-space: nowrap;") }} 
                     {% if form.current_farm.errors %} 
                         {{ form.current_farm(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -18,6 +18,18 @@
                         {{ form.current_farm(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                
+                {{ form.name.label(class="form-control-label", style="white-space: nowrap;") }}
+                {% if form.name.errors %}
+                    {{ form.soilsampledate(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.name(class="form-control form-control-lg") }}
+                {% endif %}
                 
                 {{ form.soilsampledate.label(class="form-control-label", style="white-space: nowrap;") }}
                 {% if form.soilsampledate.errors %}
@@ -56,80 +68,80 @@
                 {% endif %}
                 <br>
                 <div class="input-group">
-                    {{ form.phosphorus_1.label(class="form-control-label") }}    
-                    {% if form.phosphorus_1.errors %}
-                        {{ form.phosphorus_1(class="form-control form-control-lg is-invalid") }}
+                    {{ form.phosphorus.label(class="form-control-label") }}    
+                    {% if form.phosphorus.errors %}
+                        {{ form.phosphorus(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.phosphorus_1.errors %}
+                            {% for error in form.phosphorus.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.phosphorus_1(class="form-control form-control-lg") }}
+                        {{ form.phosphorus(class="form-control form-control-lg") }}
                     {% endif %}
                     
-                    {{ form.phosphorus_2.label(class="form-control-label") }}
-                    {% if form.phosphorus_2.errors %}
-                        {{ form.phosphorus_2(class="form-control form-control-lg is-invalid") }}
+                    {{ form.phosphorus_unit.label(class="form-control-label") }}
+                    {% if form.phosphorus_unit.errors %}
+                        {{ form.phosphorus_unit(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.phosphorus_2.errors %}
+                            {% for error in form.phosphorus_unit.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.phosphorus_2(class="form-control form-control-lg") }}
+                        {{ form.phosphorus_unit(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <br>                
                 <div class="input-group">
-                    {{ form.potassium_1.label(class="form-control-label") }}
-                    {% if form.potassium_1.errors %}
-                        {{ form.potassium_1(class="form-control form-control-lg is-invalid") }}
+                    {{ form.potassium.label(class="form-control-label") }}
+                    {% if form.potassium.errors %}
+                        {{ form.potassium(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.potassium_1.errors %}
+                            {% for error in form.potassium.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.potassium_1(class="form-control form-control-lg") }}
+                        {{ form.potassium(class="form-control form-control-lg") }}
                     {% endif %}
                 
-                    {{ form.potassium_2.label(class="form-control-label") }}
-                    {% if form.potassium_2.errors %}
-                        {{ form.potassium_2(class="form-control form-control-lg is-invalid") }}
+                    {{ form.potassium_unit.label(class="form-control-label") }}
+                    {% if form.potassium_unit.errors %}
+                        {{ form.potassium_unit(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.potassium_2.errors %}
+                            {% for error in form.potassium_unit.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.potassium_2(class="form-control form-control-lg") }}
+                        {{ form.potassium_unit(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <br>
                 <div class="input-group">
-                    {{ form.calcium_1.label(class="form-control-label") }}
-                    {% if form.calcium_1.errors %}
-                        {{ form.calcium_1(class="form-control form-control-lg is-invalid") }}
+                    {{ form.calcium.label(class="form-control-label") }}
+                    {% if form.calcium.errors %}
+                        {{ form.calcium(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.calcium_1.errors %}
+                            {% for error in form.calcium.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.calcium_1(class="form-control form-control-lg") }}
+                        {{ form.calcium(class="form-control form-control-lg") }}
                     {% endif %}
                 
-                    {{ form.calcium_2.label(class="form-control-label") }}
-                    {% if form.calcium_2.errors %}
-                        {{ form.calcium_2(class="form-control form-control-lg is-invalid") }}
+                    {{ form.calcium_unit.label(class="form-control-label") }}
+                    {% if form.calcium_unit.errors %}
+                        {{ form.calcium_unit(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.calcium_2.errors %}
+                            {% for error in form.calcium_unit.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.calcium_2(class="form-control form-control-lg") }}
+                        {{ form.calcium_unit(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <br>

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField, DateField, TextAreaField #, RadioField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
-from WebApp.models import User, Role, Crop, Farmland
+from WebApp.models import User, Role, Crop, Farmland, SoilFarmland
 import datetime
 '''
 wtforms
@@ -103,25 +103,22 @@ class InsertFarmlandForm(FlaskForm):
     
     submit = SubmitField('Register the Crop Field.')
     
-    # coordinates = StringField('Coordinates', validators=[DataRequired()])
-    
     def validate_name(self, field):
         if Farmland.query.filter_by(name=field.data).first():
             raise ValidationError('Farmland name already in use.')
-            
+
+    def validate_harvestdate(self, field):
+        if field.data <= datetime.date.today():
+            raise ValidationError("The Harvest Date must be a future date.")
+        
+    def validate_sowdate(self, field):
+        if field.data >= self.harvestdate.data:
+            raise ValidationError("Seed time must be before Harvest time.")
+    
     def validate_productexpected(self, field):
         if field.data < 0:
             raise ValidationError("The Production Expected must be a Positive Value.")
-        # if prod_exp == "":
-        #     raise ValidationError("The Production Expected can not be empty.")
-        # try:
-        #     prod_exp = float(productexpected.data)
-        # except ValueError:
-        #     raise ValidationError("Invalid Production Harvest Data.")
-
-    def validate_sowdate(self, field):
-         if field.data >= self.harvestdate.data:
-             raise ValidationError("The Seed Date must be before the Harvest Date.")            
+            
             
 class HistoricalForm(FlaskForm):
     current_farm = SelectField('Current Farmland', coerce=int)
@@ -211,27 +208,32 @@ class InsertHistoricalForm(FlaskForm):
 
 class SoilForm(FlaskForm):
     current_farm = SelectField('Current Farmland', coerce=int)
-    soilsampledate = DateField('Soil Test Date', validators=[Optional()])
-    depth = FloatField('Sampling Depth (cm)', validators=[Optional()], default=0)
-    organicmatterlevel = FloatField('Organic Matter o N (%)', validators=[Optional()], default=0)
-    phosphorus_1 = FloatField('P (ppm)', validators=[Optional()], default=0)
-    # phosphorus_2 = SelectField('P', coerce=int, validators=[Optional()])
-    phosphorus_2 = FloatField('P (mg/dm3)', validators=[Optional()], default=0)
-    potassium_1 = FloatField('K (cmolc/dm3)', validators=[Optional()], default=0)
-    potassium_2 = FloatField('K (mg/dm3)', validators=[Optional()], default=0)
-    calcium_1 = FloatField('Ca (cmolc/dm3)', validators=[Optional()], default=0)
-    calcium_2 = FloatField('Ca (mg/dm3)', validators=[Optional()], default=0)
-    sand = FloatField('Sand', validators=[Optional()], default=0)
-    slit = FloatField('Slit', validators=[Optional()], default=0)
-    clay = FloatField('Clay', validators=[Optional()], default=0)
-    sulfur = FloatField('Sulfur (mg/dm3)', validators=[Optional()], default=0)
-    magnesium = FloatField('Mg (mg/dm3)', validators=[Optional()], default=0)
-    boron = FloatField('B (mg/dm3)', validators=[Optional()], default=0)
-    copper = FloatField('Cu (mg/dm3)', validators=[Optional()], default=0)
-    zinc = FloatField('Zn (mg/dm3)', validators=[Optional()], default=0)
-    manganese = FloatField('Mn (mg/dm3)', validators=[Optional()], default=0)
+    name = StringField('Soil Test Name ', validators=[DataRequired(), Length(min=2, max=50)])
+    soilsampledate = DateField('Soil Test Date', validators=[DataRequired()])
+    depth = FloatField('Sampling Depth (cm)', validators=[DataRequired()], default=0)
+    organicmatterlevel = FloatField('Organic Matter o N (%)', validators=[DataRequired()], default=0)
+    phosphorus = FloatField('P', validators=[DataRequired()], default=0)
+    phosphorus_unit = SelectField('P Unit', coerce=int)
+    potassium = FloatField('K', validators=[DataRequired()], default=0)
+    potassium_unit = SelectField('K Unit', coerce=int)
+    calcium = FloatField('Ca', validators=[DataRequired()], default=0)
+    calcium_unit = SelectField('Ca Unit', coerce=int)
+    sand = FloatField('Sand', validators=[DataRequired()], default=0)
+    slit = FloatField('Slit', validators=[DataRequired()], default=0)
+    clay = FloatField('Clay', validators=[DataRequired()], default=0)
+    sulfur = FloatField('Sulfur (mg/dm3)', validators=[DataRequired()], default=0)
+    magnesium = FloatField('Mg (mg/dm3)', validators=[DataRequired()], default=0)
+    boron = FloatField('B (mg/dm3)', validators=[DataRequired()], default=0)
+    copper = FloatField('Cu (mg/dm3)', validators=[DataRequired()], default=0)
+    zinc = FloatField('Zn (mg/dm3)', validators=[DataRequired()], default=0)
+    manganese = FloatField('Mn (mg/dm3)', validators=[DataRequired()], default=0)
+    
     submit = SubmitField('Register Soil Sample Data')
-
+    
+    # def validate_name(self, name):
+    #     if SoilFarmland.query.filter_by(name=field.data).first():
+    #         raise ValidationError('Soil Test name already in use.')
+            
     def validate_depth(self, field):
         if (field.data < 0):
             raise ValidationError('Depth can not be a negative value.')
@@ -242,27 +244,15 @@ class SoilForm(FlaskForm):
         if (field.data > 100):
             raise ValidationError('Organic Matter Level can not higher than 100%.')
 
-    def validate_phosphorus_1(self, field):
+    def validate_phosphorus(self, field):
         if (field.data < 0):
             raise ValidationError('Phosphorus value can not be a negative value.')
 
-    def validate_phosphorus_2(self, field):
-        if (field.data < 0):
-            raise ValidationError('Phosphorus value can not be a negative value.')
-
-    def validate_potassium_1(self, field):
+    def validate_potassium(self, field):
         if (field.data < 0):
             raise ValidationError('Potassium value can not be a negative value.')
 
-    def validate_potassium_2(self, field):
-        if (field.data < 0):
-            raise ValidationError('Potassium value can not be a negative value.')
-
-    def validate_calcium_1(self, field):
-        if (field.data < 0):
-            raise ValidationError('Calcium value can not be a negative value.')
-
-    def validate_calcium_2(self, field):
+    def validate_calcium(self, field):
         if (field.data < 0):
             raise ValidationError('Calcium value can not be a negative value.')
 
